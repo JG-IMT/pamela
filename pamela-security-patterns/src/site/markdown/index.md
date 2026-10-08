@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Pamela Security-Patterns
  
 ## Introduction to SecurityPatterns library

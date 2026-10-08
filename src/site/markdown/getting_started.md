@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Getting started with PAMELA
 
 There are several way to get and/or use Pamela.

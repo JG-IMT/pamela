@@ -1,7 +1,3 @@
----
-sidebar_position: 5
----
-
 # A basic example
 
 *Note that examples (with links to the code) are available by the end of this web page.*

@@ -1,7 +1,3 @@
----
-sidebar_position: 15
----
-
 # Support for Contract Programming, JML
 
 The Design by Contract (DbC) concept was coined by B. Meyer as an approach to design reliable software based on the idea that elements of a software system collaborate with each other on the basis of mutual obligations and benefits.

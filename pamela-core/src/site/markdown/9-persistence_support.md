@@ -1,7 +1,3 @@
----
-sidebar_position: 10
----
-
 # Persistance support, XML serialization/deserialization
 
 In most applications, persistency is generally required to guarantee the recovery and communication of structured data along time and applications.

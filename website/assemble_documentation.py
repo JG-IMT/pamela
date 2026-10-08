@@ -43,9 +43,6 @@ SOURCE_TO_DESTINATION: dict[Path, Path] = {
         ASSEMBLED_DOCUMENTATION,
 }
 
-# Docusaurus menu metadata; the menu now lives in mkdocs.yml (key "nav")
-DOCUSAURUS_LEFTOVER_FILE_NAMES: tuple[str, ...] = ("_category_.json",)
-
 
 # -- Public: entry point ----------------------------------------------------------------
 
@@ -71,12 +68,7 @@ def _remove_previous_assembly() -> None:
 
 
 def _copy_folder(source_folder: Path, destination_folder: Path) -> None:
-    shutil.copytree(
-        source_folder,
-        destination_folder,
-        dirs_exist_ok=True,
-        ignore=shutil.ignore_patterns(*DOCUSAURUS_LEFTOVER_FILE_NAMES),
-    )
+    shutil.copytree(source_folder, destination_folder, dirs_exist_ok=True)
 
 
 def _count_pages() -> int:

@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Pamela : an annotation-based Java modelling framework
 
 ## `openflexo-core` component

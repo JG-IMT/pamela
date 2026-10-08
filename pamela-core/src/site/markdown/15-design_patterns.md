@@ -1,7 +1,3 @@
----
-sidebar_position: 16
----
-
 # Design patterns / Aspect programming / Code weaving
 
 PAMELA framework offers some Aspect-Oriented Programming (AOP) features enabling the definition of additional behaviour to existing Java code. Code weaving is performed at run-time.

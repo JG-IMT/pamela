@@ -1,7 +1,3 @@
----
-sidebar_position: 5
----
-
 # Common annotations
 
 Here is a non-exhaustive list of the most common Java annotations used for a PAMELA model definition.

@@ -1,7 +1,3 @@
----
-sidebar_position: 11
----
-
 # Equality computing support
 
 PAMELA framework additionnaly offers various interesting features in the context of object graph manipulations, such as equality computation, visiting patterns, and diff/merge support with differential updating.

@@ -1,7 +1,3 @@
----
-sidebar_position: 4
----
-
 # SingleAccessPoint pattern
 
 ## What is the _SingleAccessPoint_ pattern?
