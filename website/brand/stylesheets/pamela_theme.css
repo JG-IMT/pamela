@@ -1,0 +1,241 @@
+/* Every value below was measured on the current site (openflexo.org/pamela/docs/) */
+
+:root {
+  --pamela-green: #87b924;
+  --pamela-green-dark: #6a911a;
+  --pamela-text: #1c1e21;
+  --pamela-border: #dadde1;
+  --pamela-footer-background: #303846;
+  --md-text-font: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+  --md-primary-fg-color: var(--pamela-green);
+  --md-accent-fg-color: var(--pamela-green-dark);
+  --md-typeset-a-color: var(--pamela-green);
+  --md-default-fg-color: var(--pamela-text);
+}
+
+[data-md-color-scheme="default"],
+[data-md-color-scheme="slate"] {
+  --md-typeset-color: var(--pamela-text);
+}
+
+[data-md-color-scheme="slate"] {
+  --pamela-text: #e3e3e3;
+  --pamela-border: #444950;
+  --md-typeset-a-color: #a0d13a;
+  --md-default-fg-color: var(--pamela-text);
+}
+
+
+/* -- Navbar -------------------------------------------------------------------------- */
+
+/* !important: Zensical's "classic" variant hardcodes the header colours instead of
+   reading the variables above. */
+.pamela-navbar {
+  background-color: #fff !important;
+  color: var(--pamela-text) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+[data-md-color-scheme="slate"] .pamela-navbar {
+  background-color: #242526 !important;
+}
+
+.pamela-navbar .md-header__inner {
+  height: 3rem;
+  max-width: none;
+}
+
+.pamela-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 1rem;
+  color: inherit;
+}
+
+.pamela-navbar__brand img {
+  height: 1.6rem;
+}
+
+.pamela-navbar__brand strong {
+  font-size: 0.8rem;
+}
+
+.pamela-navbar__links {
+  display: flex;
+  flex: 1;
+  gap: 1.25rem;
+}
+
+.pamela-navbar__link {
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.pamela-navbar__link:hover,
+.pamela-navbar__link--current {
+  color: var(--pamela-green) !important;
+}
+
+.pamela-navbar__version {
+  margin-right: 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.pamela-navbar .md-header__button,
+.pamela-navbar .md-search__input,
+.pamela-navbar .md-search__icon {
+  color: inherit;
+}
+
+.pamela-navbar .md-search__input {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+
+/* -- Side menu ----------------------------------------------------------------------- */
+
+/* The site title above the menu only belongs in the mobile drawer */
+@media (min-width: 76.25em) {
+  .md-nav--primary > .md-nav__title {
+    display: none;
+  }
+
+  .md-sidebar--primary {
+    width: 15rem;
+  }
+}
+
+.md-nav--primary .md-nav__link {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.md-nav__link--active {
+  color: var(--pamela-green) !important;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 0.2rem;
+}
+
+
+/* -- Page content -------------------------------------------------------------------- */
+
+.md-typeset h1 {
+  color: var(--pamela-text);
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.md-typeset a {
+  color: var(--md-typeset-a-color);
+}
+
+.md-typeset pre > code {
+  background-color: #f6f8fa;
+  border-radius: 0.3rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset pre > code {
+  background-color: #2b2d31;
+}
+
+.pamela-version-badge {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid #ebedf0;
+  border-radius: 0.25rem;
+  background: #ebedf0;
+  color: #000;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+[data-md-color-scheme="slate"] .pamela-version-badge {
+  border-color: #3a3a3a;
+  background: #3a3a3a;
+  color: #e3e3e3;
+}
+
+.pamela-pagination {
+  display: flex;
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.pamela-pagination a {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--pamela-border);
+  border-radius: 0.4rem;
+  color: var(--pamela-green);
+}
+
+.pamela-pagination__next {
+  align-items: flex-end;
+  margin-left: auto;
+  text-align: right;
+}
+
+.pamela-pagination a span {
+  color: var(--pamela-text);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+
+/* -- Footer -------------------------------------------------------------------------- */
+
+.md-footer-meta {
+  background-color: var(--pamela-footer-background);
+}
+
+.pamela-footer {
+  padding: 1.5rem 0.6rem 1rem;
+  color: #ebedf0;
+}
+
+.pamela-footer__columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rem;
+}
+
+.pamela-footer__title {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pamela-footer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pamela-footer li {
+  margin-bottom: 0.3rem;
+  font-size: 0.7rem;
+}
+
+.pamela-footer a {
+  color: #ebedf0;
+}
+
+.pamela-footer a:hover {
+  text-decoration: underline;
+}
+
+.pamela-footer__copyright {
+  margin: 1.5rem 0 0;
+  font-size: 0.7rem;
+  text-align: center;
+}

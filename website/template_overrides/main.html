@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{# Above each page: the version badge. Below it: Previous / Next cards. Both as on the current site #}
+{% block content %}
+  <div class="pamela-version-badge">Version: {{ config.extra.pamela_version }}</div>
+  {{ super() }}
+  {% if page.previous_page or page.next_page %}
+    <nav class="pamela-pagination" aria-label="Pagination">
+      {% if page.previous_page %}
+        <a class="pamela-pagination__previous" href="{{ page.previous_page.url | url }}">
+          <span>Previous</span>
+          <strong>« {{ page.previous_page.title }}</strong>
+        </a>
+      {% endif %}
+      {% if page.next_page %}
+        <a class="pamela-pagination__next" href="{{ page.next_page.url | url }}">
+          <span>Next</span>
+          <strong>{{ page.next_page.title }} »</strong>
+        </a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endblock %}

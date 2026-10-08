@@ -1,0 +1,101 @@
+site_name: Pamela
+site_description: Pamela, an annotation-based Java modelling framework
+docs_dir: build/documentation
+site_dir: build/site
+strict: true
+
+copyright: Copyright &copy; 2026 Openflexo.
+
+# Menu order and section names. Page titles come from each page's first "# heading".
+nav:
+  - index.md
+  - getting_started.md
+  - overview.md
+  - annotations.md
+  - example.md
+  - behind_the_scene.md
+  - motivations.md
+  - faq.md
+  - Main features:
+    - pamela-core/index.md
+    - pamela-core/1-model_at_runtime.md
+    - pamela-core/2-life_cycle_management.md
+    - pamela-core/3-metaprogramming_support.md
+    - pamela-core/4-multiple_inheritance.md
+    - pamela-core/5-containment_management.md
+    - pamela-core/6-cloning_support.md
+    - pamela-core/7-clipboard_operations.md
+    - pamela-core/8-notification_support.md
+    - pamela-core/9-persistence_support.md
+    - pamela-core/10-equality_computing.md
+    - pamela-core/11-visiting_features.md
+    - pamela-core/12-differential_updating.md
+    - pamela-core/13-validation_api.md
+    - pamela-core/14-jml.md
+    - pamela-core/15-design_patterns.md
+  - Security features:
+    - pamela-security-patterns/index.md
+    - pamela-security-patterns/Authenticator.md
+    - pamela-security-patterns/Authorization.md
+    - pamela-security-patterns/SingleAccessPoint.md
+    - pamela-security-patterns/Owner.md
+
+extra:
+  homepage: https://openflexo.org/pamela/
+  pamela_version: "1.6.1"
+  pamela_navbar_links:
+    - title: Home
+      link: https://openflexo.org/
+    - title: Documentation
+      is_documentation: true
+    - title: Javadoc
+      link: https://www.openflexo.org/pamela/javadoc
+    - title: Contributors
+      link: https://openflexo.org/contributors
+    - title: Downloads
+      link: https://openflexo.org/downloads
+  pamela_footer_columns:
+    - title: Production tools
+      links:
+        - title: Jenkins production environment
+          link: https://jenkins.openflexo.org/
+        - title: Continuous/nightly builds
+          link: https://downloads.openflexo.org/openflexo/
+        - title: Openflexo artifactory
+          link: https://maven.openflexo.org/artifactory
+    - title: Something is broken? let us know
+      links:
+        - title: Start a Github issue
+          link: https://github.com/openflexo-team/website/issues
+
+theme:
+  name: material
+  custom_dir: template_overrides
+  # Without "classic", Zensical uses its own "modern" look instead of Material's
+  variant: classic
+  logo: images/pamela_logo.png
+  favicon: favicon.ico
+  features:
+    - navigation.top
+    - navigation.path
+    - search.suggest
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/pamela_theme.css
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - tables
+  - fenced_code

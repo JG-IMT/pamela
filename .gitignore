@@ -19,3 +19,6 @@ build/
 /bugs.txt
 /infer-out/
 .java-version
+
+# Python virtual environment of the documentation website
+/website/.venv/
