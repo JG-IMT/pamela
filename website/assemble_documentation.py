@@ -1,21 +1,8 @@
 """
 Builds the single folder Zensical reads (website/build/documentation/) out of the Markdown
 and images this repository keeps in several places.
-
-Pamela documents itself in three Markdown folders (the root, pamela-core,
-pamela-security-patterns) plus a shared resources folder, while Zensical builds from ONE
-folder. SOURCE_TO_DESTINATION is the only place that mapping is defined: publishing a new
-module means adding one line there.
-
-The assembled folder is never edited by hand. By default files are copied over it in place,
-so a running "zensical serve" keeps working; pass --clean to rebuild it from scratch (for
-production builds, so that a page deleted from the repository cannot linger).
-
-Map of this file:
-    - Constants: where each piece comes from and where it goes
-    - Public: assemble_documentation(), the entry point
-    - Private: the helpers it calls, in call order
 """
+
 import shutil
 import sys
 from pathlib import Path
@@ -46,17 +33,19 @@ SOURCE_TO_DESTINATION: dict[Path, Path] = {
 
 # -- Public: entry point ----------------------------------------------------------------
 
-
 def assemble_documentation(clean_first: bool) -> None:
+    
+    # clean first is True when using the parameter --clean
     if clean_first:
         _remove_previous_assembly()
+        
     for source_folder, destination_folder in SOURCE_TO_DESTINATION.items():
         _copy_folder(source_folder, destination_folder)
+        
     print(f"Assembled {_count_pages()} pages into {ASSEMBLED_DOCUMENTATION}")
 
 
 # -- Private: assembly steps ------------------------------------------------------------
-
 
 def _remove_previous_assembly() -> None:
     """
