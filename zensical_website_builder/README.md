@@ -3,8 +3,9 @@
 Builds a documentation website (menu, pages, search) from the Markdown kept in a repository,
 using [Zensical](https://zensical.org). Prerequisite: Python 3.11 or later.
 
-The tooling is meant to be reusable: only the files listed under "What belongs to the project"
-are specific to Pamela.
+The tooling is meant to be reusable. Every Openflexo site shares the same look (`site_style.css`,
+`template_overrides/`). Only these files are specific to Pamela: `mkdocs.yml` (name, menu, links,
+documentation sources), the logo and `favicon.ico`.
 
 ## Preview it locally
 

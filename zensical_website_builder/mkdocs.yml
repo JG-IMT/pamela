@@ -113,8 +113,7 @@ theme:
         name: Switch to light mode
 
 extra_css:
-  - stylesheets/site_colors.css
-  - stylesheets/site_layout.css
+  - stylesheets/site_style.css
 
 markdown_extensions:
   - toc:
