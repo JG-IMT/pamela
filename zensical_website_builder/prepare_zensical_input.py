@@ -2,7 +2,7 @@
 Prepares the single folder Zensical builds the website from (the config's docs_dir), out of
 the Markdown and images a repository keeps in several places.
 
-Which folders to copy is read from the project's own config, under "documentation_sources". 
+Which folders to copy is read from the project's own config, under "extra.documentation_sources".
 Usage:
     python prepare_zensical_input.py <path to mkdocs.yml> [--clean]
 """
@@ -17,10 +17,7 @@ SOURCES_KEY: str = "documentation_sources"
 
 
 class _ConfigLoader(yaml.SafeLoader):
-    """
-    Zensical configs can contain tags only Zensical understands (!ENV, !!python/name:...).
-    This script reads plain keys only, so those tags are skipped instead of making it fail.
-    """
+    """Skips the tags only Zensical understands (!ENV...): this script reads plain keys."""
 
 
 _ConfigLoader.add_multi_constructor("", lambda loader, tag, node: None)
@@ -31,13 +28,13 @@ _ConfigLoader.add_multi_constructor("", lambda loader, tag, node: None)
 def prepare_zensical_input(config_file: Path, clean_first: bool) -> None:
     config: dict = _read_config(config_file)
     input_folder: Path = config_file.parent / config["docs_dir"]
+    source_entries: list = _read_declared_sources(config, config_file)
 
-    # clean_first is True when --clean is passed: a page deleted from the repository
-    # can then no longer linger in the website
+    # --clean: a page deleted from the repository can no longer linger
     if clean_first:
         _delete_folder(input_folder)
 
-    _copy_declared_sources(config_file.parent, config[SOURCES_KEY], input_folder)
+    _copy_declared_sources(config_file.parent, source_entries, input_folder)
     print(f"Prepared {_count_markdown_pages(input_folder)} Markdown pages in {input_folder}")
 
 
@@ -47,11 +44,14 @@ def _read_config(config_file: Path) -> dict:
     return yaml.load(config_file.read_text(encoding="utf-8"), Loader=_ConfigLoader)
 
 
+def _read_declared_sources(config: dict, config_file: Path) -> list:
+    if SOURCES_KEY not in (config.get("extra") or {}):
+        raise SystemExit(f"{config_file}: no '{SOURCES_KEY}' list under 'extra:' (folders to copy)")
+    return config["extra"][SOURCES_KEY]
+
+
 def _delete_folder(folder: Path) -> None:
-    """
-    Not done by default: deleting the folder under a running "zensical serve" makes it
-    drop the stylesheet from the website until it is restarted.
-    """
+    """Not the default: under a running "zensical serve" it loses the stylesheet."""
     if folder.exists():
         shutil.rmtree(folder)
 

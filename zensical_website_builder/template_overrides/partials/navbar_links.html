@@ -1,5 +1,4 @@
-{# The links of the top bar, written once and used twice: in the bar on wide screens, and above
-   the page on narrow ones, where the bar has no room for them #}
+{# Top-bar links, shown in the bar (wide screens) or above the page (narrow ones) #}
 {% for navbar_link in config.extra.navbar_links %}
   {% if navbar_link.is_current_site %}
     <a class="site-navbar__link site-navbar__link--current" href="{{ nav.homepage.url | url }}">{{ navbar_link.title }}</a>

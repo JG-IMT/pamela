@@ -1,34 +1,16 @@
-# Zensical reads this file under its legacy MkDocs name (it also accepts zensical.toml)
+# Legacy MkDocs file name, still read by Zensical
 
 site_name: Pamela
 site_description: Pamela, an annotation-based Java modelling framework
 docs_dir: build/zensical_input
 site_dir: build/zensical_output
-# Production address: used by the sitemap, the canonical links and the 404 page
+# Production address (sitemap, canonical links, 404 page)
 site_url: https://openflexo.org/pamela/docs/
 strict: true
 
 copyright: Copyright &copy; 2026 Openflexo.
 
-# Read by prepare_zensical_input.py, not by Zensical.
-# Paths are relative to this file; destinations are relative to docs_dir.
-documentation_sources:
-  - source: ../src/site/markdown
-    destination: .
-  - source: ../pamela-core/src/site/markdown
-    destination: pamela-core
-  - source: ../pamela-security-patterns/src/site/markdown
-    destination: pamela-security-patterns
-  - source: ../src/site/resources/images
-    destination: images
-  - source: ../src/site/resources/img
-    destination: img
-  - source: ../src/site/resources/examples
-    destination: examples
-  - source: theme_static_files
-    destination: .
-
-# Menu order and section names. Page titles come from each page's first "# heading".
+# Menu order and sections; page titles come from each page's H1
 nav:
   - index.md
   - getting_started.md
@@ -63,15 +45,32 @@ nav:
     - pamela-security-patterns/Owner.md
 
 extra:
+  # Read by prepare_zensical_input.py. A later entry overwrites an earlier one.
+  documentation_sources:
+    - source: ../src/site/markdown
+      destination: .
+    - source: ../pamela-core/src/site/markdown
+      destination: pamela-core
+    - source: ../pamela-security-patterns/src/site/markdown
+      destination: pamela-security-patterns
+    - source: ../src/site/resources/images
+      destination: images
+    - source: ../src/site/resources/img
+      destination: img
+    - source: ../src/site/resources/examples
+      destination: examples
+    - source: theme_static_files
+      destination: .
   homepage: https://openflexo.org/pamela/
-  displayed_version: "1.6.1"
+  # Set by the Gradle task from the project version; "dev" when built by hand
+  displayed_version: !ENV [PROJECT_VERSION, "dev"]
   navbar_links:
     - title: Home
       link: https://openflexo.org/
     - title: Documentation
       is_current_site: true
     - title: Javadoc
-      link: https://www.openflexo.org/pamela/javadoc
+      link: https://www.openflexo.org/pamela/javadoc/
     - title: Contributors
       link: https://openflexo.org/contributors
     - title: Downloads
@@ -93,7 +92,7 @@ extra:
 theme:
   name: material
   custom_dir: template_overrides
-  # Without "classic", Zensical uses its own "modern" look instead of Material's
+  # "classic" keeps Material's look (the default is "modern")
   variant: classic
   logo: images/pamela_logo.png
   favicon: favicon.ico

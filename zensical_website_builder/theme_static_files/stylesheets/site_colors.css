@@ -1,5 +1,4 @@
-/* The only file to edit to recolour a project: site_layout.css reads these variables.
-   Values below are Pamela's green, measured on openflexo.org/pamela/docs/ */
+/* Project colours (Pamela's green), read by site_layout.css */
 :root {
   --site-primary: #87b924;
   --site-primary-dark: #6a911a;

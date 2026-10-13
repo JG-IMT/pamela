@@ -26,7 +26,7 @@ deleted from the repository cannot linger, then `zensical build`.
 ## How the folders relate
 
 
-1. repository (Markdown, images) : prepare_zensical_input.py copies the folders listed in documentation_sources.
+1. repository (Markdown, images) : prepare_zensical_input.py copies the folders listed in extra.documentation_sources.
       
 2. build/zensical_input/ : what Zensical reads zensical when typing  `.venv/Scripts/zensical serve`.
       

@@ -17,3 +17,44 @@ subprojects {
 
 version = "1.6.1"
 apply plugin: 'org.openflexo.buildconfig'
+
+
+// -- Documentation website (Zensical) -----------------------------------------------------
+
+def documentationBuilderFolder = file("zensical_website_builder")
+def documentationConfigFile = "mkdocs.yml"
+def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+def systemPython = isWindows ? "python" : "python3"
+def environmentPython = new File(documentationBuilderFolder, isWindows ? ".venv/Scripts/python.exe" : ".venv/bin/python")
+def environmentZensical = new File(documentationBuilderFolder, isWindows ? ".venv/Scripts/zensical.exe" : ".venv/bin/zensical")
+
+tasks.register("setupDocumentationEnvironment", Exec) {
+    group = "documentation"
+    description = "Creates the Python environment holding Zensical (Python 3.11 or later required)"
+    workingDir documentationBuilderFolder
+    onlyIf { !environmentPython.exists() }
+    commandLine systemPython, "-m", "venv", ".venv"
+    doLast {
+        exec {
+            workingDir documentationBuilderFolder
+            commandLine environmentPython, "-m", "pip", "install", "-r", "requirements.txt"
+        }
+    }
+}
+
+tasks.register("prepareDocumentationInput", Exec) {
+    group = "documentation"
+    description = "Copies the repository Markdown into the folder Zensical reads"
+    dependsOn "setupDocumentationEnvironment"
+    workingDir documentationBuilderFolder
+    commandLine environmentPython, "prepare_zensical_input.py", documentationConfigFile, "--clean"
+}
+
+tasks.register("buildDocumentationSite", Exec) {
+    group = "documentation"
+    description = "Builds the documentation website in zensical_website_builder/build/zensical_output"
+    dependsOn "prepareDocumentationInput"
+    workingDir documentationBuilderFolder
+    environment "PROJECT_VERSION", project.version.toString()
+    commandLine environmentZensical, "build", "--clean"
+}

@@ -7,9 +7,7 @@
   --md-text-font: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
 }
 
-/* Not set on :root: the theme sets these same variables on <body>, which would win.
-   The selectors name both attributes because the theme's dark-mode rule does too, and a
-   rule naming only one attribute would lose to it. */
+/* On the colour scheme with both attributes, or the theme's own rules win */
 [data-md-color-scheme="default"][data-md-color-primary],
 [data-md-color-scheme="slate"][data-md-color-primary] {
   --md-primary-fg-color: var(--site-primary);
@@ -28,8 +26,7 @@
 
 /* -- Navbar -------------------------------------------------------------------------- */
 
-/* !important: Zensical's "classic" variant hardcodes the header colours instead of
-   reading the variables above. */
+/* !important: the "classic" variant hardcodes the header colours */
 .site-navbar {
   background-color: #fff !important;
   color: var(--site-text) !important;
@@ -88,8 +85,7 @@
   display: none;
 }
 
-/* Below 60em, the theme's tablet breakpoint, the bar has no room left for the links and
-   the version: the links move above the page, and the brand pushes the buttons right. */
+/* Narrow screens: the links move above the page (see main.html) */
 @media (max-width: 59.99em) {
   .site-navbar__links,
   .site-navbar__version {
@@ -121,7 +117,7 @@
 
 /* -- Side menu ----------------------------------------------------------------------- */
 
-/* The site title above the menu only belongs in the mobile drawer */
+/* The site title belongs in the mobile drawer only */
 @media (min-width: 76.25em) {
   .md-nav--primary > .md-nav__title {
     display: none;
