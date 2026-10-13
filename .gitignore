@@ -21,4 +21,4 @@ build/
 .java-version
 
 # Python virtual environment of the documentation website
-/website/.venv/
+/documentation_website/.venv/

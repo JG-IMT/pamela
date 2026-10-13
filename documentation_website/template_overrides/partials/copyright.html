@@ -1,0 +1,16 @@
+{# Dark footer of the current OpenFlexo sites: link columns, then the copyright line #}
+<div class="site-footer">
+  <div class="site-footer__columns">
+    {% for footer_column in config.extra.footer_columns %}
+      <div>
+        <p class="site-footer__title">{{ footer_column.title }}</p>
+        <ul>
+          {% for footer_link in footer_column.links %}
+            <li><a href="{{ footer_link.link }}">{{ footer_link.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+  <p class="site-footer__copyright">{{ config.copyright }}</p>
+</div>

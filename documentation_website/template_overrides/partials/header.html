@@ -1,24 +1,24 @@
-{# Single-row navbar of the current Pamela site: logo, title, links, version, theme toggle, search.
+{# Single-row navbar of the current OpenFlexo sites: logo, title, links, version, theme toggle, search.
    Replaces Zensical's header, which has no slot for a link list. #}
-<header class="md-header md-header--shadow pamela-navbar" data-md-component="header">
+<header class="md-header md-header--shadow site-navbar" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">
     <label class="md-header__button md-icon" for="__drawer" aria-label="{{ lang.t('nav') }}">
       {% include ".icons/material/menu.svg" %}
     </label>
-    <a href="{{ config.extra.homepage }}" class="pamela-navbar__brand" aria-label="{{ config.site_name }}">
+    <a href="{{ config.extra.homepage }}" class="site-navbar__brand" aria-label="{{ config.site_name }}">
       {% include "partials/logo.html" %}
       <strong>{{ config.site_name }}</strong>
     </a>
-    <div class="pamela-navbar__links">
-      {% for navbar_link in config.extra.pamela_navbar_links %}
-        {% if navbar_link.is_documentation %}
-          <a class="pamela-navbar__link pamela-navbar__link--current" href="{{ nav.homepage.url | url }}">{{ navbar_link.title }}</a>
+    <div class="site-navbar__links">
+      {% for navbar_link in config.extra.navbar_links %}
+        {% if navbar_link.is_current_site %}
+          <a class="site-navbar__link site-navbar__link--current" href="{{ nav.homepage.url | url }}">{{ navbar_link.title }}</a>
         {% else %}
-          <a class="pamela-navbar__link" href="{{ navbar_link.link }}">{{ navbar_link.title }}</a>
+          <a class="site-navbar__link" href="{{ navbar_link.link }}">{{ navbar_link.title }}</a>
         {% endif %}
       {% endfor %}
     </div>
-    <span class="pamela-navbar__version">{{ config.extra.pamela_version }}</span>
+    <span class="site-navbar__version">{{ config.extra.displayed_version }}</span>
     {% include "partials/palette.html" %}
     {% include "partials/javascripts/palette.html" %}
     <label class="md-header__button md-icon" for="__search" aria-label="{{ lang.t('search') }}">

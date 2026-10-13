@@ -1,28 +1,29 @@
-/* Every value below was measured on the current site (openflexo.org/pamela/docs/) */
+/* Layout shared by every project. Light-mode values were measured on the current Pamela
+   site (openflexo.org/pamela/docs/); dark-mode values are approximations, not measured.
+   Colours of the project come from site_colors.css. */
 
 :root {
-  --pamela-green: #87b924;
-  --pamela-green-dark: #6a911a;
-  --pamela-text: #1c1e21;
-  --pamela-border: #dadde1;
-  --pamela-footer-background: #303846;
+  --site-text: #1c1e21;
+  --site-border: #dadde1;
+  --site-footer-background: #303846;
   --md-text-font: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
-  --md-primary-fg-color: var(--pamela-green);
-  --md-accent-fg-color: var(--pamela-green-dark);
-  --md-typeset-a-color: var(--pamela-green);
-  --md-default-fg-color: var(--pamela-text);
 }
 
-[data-md-color-scheme="default"],
-[data-md-color-scheme="slate"] {
-  --md-typeset-color: var(--pamela-text);
+/* Not on :root, and with both attributes: the theme sets the same variables on <body>, and
+   in dark mode with a selector using both attributes, which would win over a plainer one */
+[data-md-color-scheme="default"][data-md-color-primary],
+[data-md-color-scheme="slate"][data-md-color-primary] {
+  --md-primary-fg-color: var(--site-primary);
+  --md-accent-fg-color: var(--site-primary-dark);
+  --md-typeset-a-color: var(--site-primary);
+  --md-default-fg-color: var(--site-text);
+  --md-typeset-color: var(--site-text);
 }
 
-[data-md-color-scheme="slate"] {
-  --pamela-text: #e3e3e3;
-  --pamela-border: #444950;
-  --md-typeset-a-color: #a0d13a;
-  --md-default-fg-color: var(--pamela-text);
+[data-md-color-scheme="slate"][data-md-color-primary] {
+  --site-text: #e3e3e3;
+  --site-border: #444950;
+  --md-typeset-a-color: var(--site-primary-on-dark);
 }
 
 
@@ -30,22 +31,22 @@
 
 /* !important: Zensical's "classic" variant hardcodes the header colours instead of
    reading the variables above. */
-.pamela-navbar {
+.site-navbar {
   background-color: #fff !important;
-  color: var(--pamela-text) !important;
+  color: var(--site-text) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-[data-md-color-scheme="slate"] .pamela-navbar {
+[data-md-color-scheme="slate"] .site-navbar {
   background-color: #242526 !important;
 }
 
-.pamela-navbar .md-header__inner {
+.site-navbar .md-header__inner {
   height: 3rem;
   max-width: none;
 }
 
-.pamela-navbar__brand {
+.site-navbar__brand {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -53,44 +54,44 @@
   color: inherit;
 }
 
-.pamela-navbar__brand img {
+.site-navbar__brand img {
   height: 1.6rem;
 }
 
-.pamela-navbar__brand strong {
+.site-navbar__brand strong {
   font-size: 0.8rem;
 }
 
-.pamela-navbar__links {
+.site-navbar__links {
   display: flex;
   flex: 1;
   gap: 1.25rem;
 }
 
-.pamela-navbar__link {
+.site-navbar__link {
   color: inherit;
   font-size: 0.8rem;
   font-weight: 500;
 }
 
-.pamela-navbar__link:hover,
-.pamela-navbar__link--current {
-  color: var(--pamela-green) !important;
+.site-navbar__link:hover,
+.site-navbar__link--current {
+  color: var(--site-primary) !important;
 }
 
-.pamela-navbar__version {
+.site-navbar__version {
   margin-right: 0.8rem;
   font-size: 0.7rem;
   font-weight: 600;
 }
 
-.pamela-navbar .md-header__button,
-.pamela-navbar .md-search__input,
-.pamela-navbar .md-search__icon {
+.site-navbar .md-header__button,
+.site-navbar .md-search__input,
+.site-navbar .md-search__icon {
   color: inherit;
 }
 
-.pamela-navbar .md-search__input {
+.site-navbar .md-search__input {
   background-color: rgba(0, 0, 0, 0.06);
 }
 
@@ -114,7 +115,7 @@
 }
 
 .md-nav__link--active {
-  color: var(--pamela-green) !important;
+  color: var(--site-primary) !important;
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 0.2rem;
 }
@@ -123,7 +124,7 @@
 /* -- Page content -------------------------------------------------------------------- */
 
 .md-typeset h1 {
-  color: var(--pamela-text);
+  color: var(--site-text);
   font-size: 2.4rem;
   font-weight: 700;
   margin-bottom: 1.25rem;
@@ -142,7 +143,7 @@
   background-color: #2b2d31;
 }
 
-.pamela-version-badge {
+.site-version-badge {
   display: inline-block;
   margin-bottom: 1rem;
   padding: 0.1rem 0.5rem;
@@ -154,37 +155,37 @@
   font-weight: 700;
 }
 
-[data-md-color-scheme="slate"] .pamela-version-badge {
+[data-md-color-scheme="slate"] .site-version-badge {
   border-color: #3a3a3a;
   background: #3a3a3a;
   color: #e3e3e3;
 }
 
-.pamela-pagination {
+.site-pagination {
   display: flex;
   gap: 1rem;
   margin-top: 3rem;
 }
 
-.pamela-pagination a {
+.site-pagination a {
   display: flex;
   flex: 1;
   flex-direction: column;
   gap: 0.2rem;
   padding: 0.8rem 1rem;
-  border: 1px solid var(--pamela-border);
+  border: 1px solid var(--site-border);
   border-radius: 0.4rem;
-  color: var(--pamela-green);
+  color: var(--site-primary);
 }
 
-.pamela-pagination__next {
+.site-pagination__next {
   align-items: flex-end;
   margin-left: auto;
   text-align: right;
 }
 
-.pamela-pagination a span {
-  color: var(--pamela-text);
+.site-pagination a span {
+  color: var(--site-text);
   font-size: 0.65rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -195,46 +196,46 @@
 /* -- Footer -------------------------------------------------------------------------- */
 
 .md-footer-meta {
-  background-color: var(--pamela-footer-background);
+  background-color: var(--site-footer-background);
 }
 
-.pamela-footer {
+.site-footer {
   padding: 1.5rem 0.6rem 1rem;
   color: #ebedf0;
 }
 
-.pamela-footer__columns {
+.site-footer__columns {
   display: flex;
   flex-wrap: wrap;
   gap: 4rem;
 }
 
-.pamela-footer__title {
+.site-footer__title {
   margin: 0 0 0.6rem;
   font-size: 0.8rem;
   font-weight: 700;
 }
 
-.pamela-footer ul {
+.site-footer ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.pamela-footer li {
+.site-footer li {
   margin-bottom: 0.3rem;
   font-size: 0.7rem;
 }
 
-.pamela-footer a {
+.site-footer a {
   color: #ebedf0;
 }
 
-.pamela-footer a:hover {
+.site-footer a:hover {
   text-decoration: underline;
 }
 
-.pamela-footer__copyright {
+.site-footer__copyright {
   margin: 1.5rem 0 0;
   font-size: 0.7rem;
   text-align: center;
