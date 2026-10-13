@@ -23,6 +23,25 @@ Zensical only watches its input folder, not the repository.
 For a production build use `prepare_zensical_input.py mkdocs.yml --clean`, so that a page
 deleted from the repository cannot linger, then `zensical build`.
 
+## Build it with Gradle
+
+From the repository root. This is what Jenkins runs as well.
+
+```bash
+./gradlew buildDocumentationSite
+```
+
+The website is written to `zensical_website_builder/build/zensical_output`. The task chain:
+
+| Task | What it does |
+|---|---|
+| `setupDocumentationEnvironment` | creates `.venv` and installs Zensical, only if `.venv` is missing |
+| `prepareDocumentationInput` | runs `prepare_zensical_input.py mkdocs.yml --clean` |
+| `buildDocumentationSite` | runs `zensical build` and shows the Gradle project `version` in the navbar |
+
+Built by hand, the navbar shows "dev": the version comes from the `PROJECT_VERSION` environment
+variable that the Gradle task sets.
+
 ## How the folders relate
 
 
