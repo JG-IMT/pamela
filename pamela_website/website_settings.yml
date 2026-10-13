@@ -1,14 +1,10 @@
-# Legacy MkDocs file name, still read by Zensical
-
 site_name: Pamela
 site_description: Pamela, an annotation-based Java modelling framework
-docs_dir: build/zensical_input
-site_dir: build/zensical_output
 # Production address (sitemap, canonical links, 404 page)
 site_url: https://openflexo.org/pamela/docs/
-strict: true
 
-copyright: Copyright &copy; 2026 Openflexo.
+theme:
+  logo: images/pamela_logo.png
 
 # Menu order and sections; page titles come from each page's H1
 nav:
@@ -45,7 +41,7 @@ nav:
     - pamela-security-patterns/Owner.md
 
 extra:
-  # Read by prepare_zensical_input.py. A later entry overwrites an earlier one.
+  # Folders copied into the website, relative to this file. A later entry overwrites an earlier one.
   documentation_sources:
     - source: ../src/site/markdown
       destination: .
@@ -59,11 +55,7 @@ extra:
       destination: img
     - source: ../src/site/resources/examples
       destination: examples
-    - source: theme_static_files
-      destination: .
   homepage: https://openflexo.org/pamela/
-  # Set by the Gradle task from the project version; "dev" when built by hand
-  displayed_version: !ENV [PROJECT_VERSION, "dev"]
   navbar_links:
     - title: Home
       link: https://openflexo.org/
@@ -75,48 +67,3 @@ extra:
       link: https://openflexo.org/contributors
     - title: Downloads
       link: https://openflexo.org/downloads
-  footer_columns:
-    - title: Production tools
-      links:
-        - title: Jenkins production environment
-          link: https://jenkins.openflexo.org/
-        - title: Continuous/nightly builds
-          link: https://downloads.openflexo.org/openflexo/
-        - title: Openflexo artifactory
-          link: https://maven.openflexo.org/artifactory
-    - title: Something is broken? let us know
-      links:
-        - title: Start a Github issue
-          link: https://github.com/openflexo-team/website/issues
-
-theme:
-  name: material
-  custom_dir: template_overrides
-  # "classic" keeps Material's look (the default is "modern")
-  variant: classic
-  logo: images/pamela_logo.png
-  favicon: favicon.ico
-  features:
-    - navigation.top
-    - navigation.path
-    - search.suggest
-  palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-
-extra_css:
-  - stylesheets/site_style.css
-
-markdown_extensions:
-  - toc:
-      permalink: true
-  - tables
-  - fenced_code

@@ -1,28 +1,29 @@
-# Documentation website
+# Website builder
 
 Builds a documentation website (menu, pages, search) from the Markdown kept in a repository,
 using [Zensical](https://zensical.org). Prerequisite: Python 3.11 or later.
 
-The tooling is meant to be reusable. Every Openflexo site shares the same look (`site_style.css`,
-`template_overrides/`). Only these files are specific to Pamela: `mkdocs.yml` (name, menu, links,
-documentation sources), the logo and `favicon.ico`.
+## Who owns what
 
-## Preview it locally
+```
+pamela_website/                  1. Belongs to Pamela (you write it)
+└─ website_settings.yml             name, menu, links, folders holding the Markdown, logo
 
-Run these from this folder.
+zensical_website_builder/        2. The tool (the same for every repository)
+├─ prepare_website_build.py
+├─ shared_site_settings.yml         theme, palette, extensions, footer
+├─ shared_html_templates/           header, footer, pagination
+├─ shared_style_and_icon/           site_style.css, favicon.ico
+└─ requirements.txt
 
-```bash
-python -m venv .venv                            # once
-.venv/Scripts/pip install -r requirements.txt   # once (Linux/macOS: .venv/bin/pip)
-.venv/Scripts/python prepare_zensical_input.py mkdocs.yml
-.venv/Scripts/zensical serve                    # http://localhost:8000
+build/website/                   3. Generated (ignored by git)
+├─ input/                           the Markdown copied here, read by Zensical
+├─ zensical_config.yml              shared settings completed by Pamela's
+└─ output/                          the website
 ```
 
-Re-run `prepare_zensical_input.py` after editing a Markdown file (the server can stay up):
-Zensical only watches its input folder, not the repository.
-
-For a production build use `prepare_zensical_input.py mkdocs.yml --clean`, so that a page
-deleted from the repository cannot linger, then `zensical build`.
+Every Openflexo website shares the same look. To document another repository, create its own
+folder with a `website_settings.yml` (copy Pamela's) and run the same tool on it.
 
 ## Build it with Gradle
 
@@ -32,25 +33,29 @@ From the repository root. This is what Jenkins runs as well.
 ./gradlew buildDocumentationSite
 ```
 
-The website is written to `zensical_website_builder/build/zensical_output`. The task chain:
+The website is written to `build/website/output`. The task chain:
 
 | Task | What it does |
 |---|---|
 | `setupDocumentationEnvironment` | creates `.venv` and installs Zensical, only if `.venv` is missing |
-| `prepareDocumentationInput` | runs `prepare_zensical_input.py mkdocs.yml --clean` |
-| `buildDocumentationSite` | runs `zensical build` and shows the Gradle project `version` in the navbar |
+| `prepareDocumentationInput` | runs `prepare_website_build.py`: copies the Markdown, generates the Zensical config |
+| `buildDocumentationSite` | runs `zensical build` |
 
-Built by hand, the navbar shows "dev": the version comes from the `PROJECT_VERSION` environment
-variable that the Gradle task sets.
+The version in the navbar is the Gradle project `version`.
 
-## How the folders relate
+## Preview it locally
 
+Run these from this folder, once Gradle has created `.venv` (or create it by hand:
+`python -m venv .venv`, then `.venv/Scripts/pip install -r requirements.txt`; on Linux and macOS
+use `.venv/bin`).
 
-1. repository (Markdown, images) : prepare_zensical_input.py copies the folders listed in extra.documentation_sources.
-      
-2. build/zensical_input/ : what Zensical reads zensical when typing  `.venv/Scripts/zensical serve`.
-      
-3. build/zensical_output/ : the website resulted by `.venv/Scripts/zensical serve`.
+```bash
+.venv/Scripts/python prepare_website_build.py --settings ../pamela_website/website_settings.yml --build-folder ../build/website
+.venv/Scripts/zensical serve -f ../build/website/zensical_config.yml    # http://localhost:8000
+```
 
+Re-run the first command after editing a Markdown file (the server can stay up): Zensical only
+watches its input folder, not the repository. Without `--version` the navbar shows "dev".
 
-Both `build/` folders are generated and ignored by git.
+For a production build add `--clean` to the first command, so that a page deleted from the
+repository cannot linger.
