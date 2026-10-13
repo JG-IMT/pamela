@@ -45,17 +45,43 @@ The version in the navbar is the Gradle project `version`.
 
 ## Preview it locally
 
-Run these from this folder, once Gradle has created `.venv` (or create it by hand:
-`python -m venv .venv`, then `.venv/Scripts/pip install -r requirements.txt`; on Linux and macOS
-use `.venv/bin`).
+Run everything from `zensical_website_builder/`.
+
+**1. Create the environment (once).** Skip it if `./gradlew buildDocumentationSite` already ran:
+it creates `.venv`.
 
 ```bash
-.venv/Scripts/python prepare_website_build.py --settings ../pamela_website/website_settings.yml --build-folder ../build/website
-.venv/Scripts/zensical serve -f ../build/website/zensical_config.yml    # http://localhost:8000
+python -m venv .venv
 ```
 
-Re-run the first command after editing a Markdown file (the server can stay up): Zensical only
+**2. Activate it (each new terminal).**
+
+```powershell
+.venv\Scripts\Activate.ps1      # Windows PowerShell
+```
+
+```bash
+source .venv/bin/activate       # Linux, macOS
+```
+
+**3. Install Zensical (once).**
+
+```bash
+pip install -r requirements.txt
+```
+
+**4. Prepare the website files.** Run it again after editing a Markdown file: Zensical only
 watches its input folder, not the repository. Without `--version` the navbar shows "dev".
 
-For a production build add `--clean` to the first command, so that a page deleted from the
-repository cannot linger.
+```bash
+python prepare_website_build.py --settings ../pamela_website/website_settings.yml --build-folder ../build/website
+```
+
+**5. Start the server** and open http://localhost:8000. It can stay up between two runs of step 4.
+
+```bash
+zensical serve -f ../build/website/zensical_config.yml
+```
+
+For a production build, add `--clean` to step 4 so that a page deleted from the repository
+cannot linger.
