@@ -1,6 +1,4 @@
-/* Layout shared by every project. Light-mode values were measured on the current Pamela
-   site (openflexo.org/pamela/docs/); dark-mode values are approximations, not measured.
-   Colours of the project come from site_colors.css. */
+/* Layout shared by every project.*/
 
 :root {
   --site-text: #1c1e21;
@@ -9,8 +7,9 @@
   --md-text-font: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
 }
 
-/* Not on :root, and with both attributes: the theme sets the same variables on <body>, and
-   in dark mode with a selector using both attributes, which would win over a plainer one */
+/* Not set on :root: the theme sets these same variables on <body>, which would win.
+   The selectors name both attributes because the theme's dark-mode rule does too, and a
+   rule naming only one attribute would lose to it. */
 [data-md-color-scheme="default"][data-md-color-primary],
 [data-md-color-scheme="slate"][data-md-color-primary] {
   --md-primary-fg-color: var(--site-primary);

@@ -72,8 +72,10 @@ def _count_markdown_pages(input_folder: Path) -> int:
 
 
 def _parse_arguments() -> argparse.Namespace:
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
-    parser.add_argument("config_file", type=Path, help="Zensical config of the project (mkdocs.yml)")
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(
+        description="Prepares the folder Zensical builds the website from."
+    )
+    parser.add_argument("config_file", type=Path, help="Zensical config of the project")
     parser.add_argument("--clean", action="store_true", help="delete the input folder first")
     return parser.parse_args()
 
