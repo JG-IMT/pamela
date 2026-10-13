@@ -21,4 +21,4 @@ build/
 .java-version
 
 # Python virtual environment of the documentation website
-/documentation_website/.venv/
+/zensical_website_builder/.venv/

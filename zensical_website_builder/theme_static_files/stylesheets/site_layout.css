@@ -84,6 +84,30 @@
   font-weight: 600;
 }
 
+.site-mobile-links {
+  display: none;
+}
+
+/* Below 60em, the theme's tablet breakpoint, the bar has no room left for the links and
+   the version: the links move above the page, and the brand pushes the buttons right. */
+@media (max-width: 59.99em) {
+  .site-navbar__links,
+  .site-navbar__version {
+    display: none;
+  }
+
+  .site-navbar__brand {
+    margin-right: auto;
+  }
+
+  .site-mobile-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+}
+
 .site-navbar .md-header__button,
 .site-navbar .md-search__input,
 .site-navbar .md-search__icon {

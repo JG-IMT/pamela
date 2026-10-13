@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
-{# Above each page: the version badge. Below it: Previous / Next cards. Both as on the current sites #}
+{# Above each page: the top-bar links (narrow screens only) and the version badge. Below it: Previous / Next cards. As on the current sites #}
 {% block content %}
+  <nav class="site-mobile-links" aria-label="Site links">
+    {% include "partials/navbar_links.html" %}
+  </nav>
   <div class="site-version-badge">Version: {{ config.extra.displayed_version }}</div>
   {{ super() }}
   {% if page.previous_page or page.next_page %}

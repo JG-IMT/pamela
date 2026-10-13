@@ -4,6 +4,8 @@ site_name: Pamela
 site_description: Pamela, an annotation-based Java modelling framework
 docs_dir: build/zensical_input
 site_dir: build/zensical_output
+# Production address: used by the sitemap, the canonical links and the 404 page
+site_url: https://openflexo.org/pamela/docs/
 strict: true
 
 copyright: Copyright &copy; 2026 Openflexo.

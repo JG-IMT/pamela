@@ -10,13 +10,7 @@
       <strong>{{ config.site_name }}</strong>
     </a>
     <div class="site-navbar__links">
-      {% for navbar_link in config.extra.navbar_links %}
-        {% if navbar_link.is_current_site %}
-          <a class="site-navbar__link site-navbar__link--current" href="{{ nav.homepage.url | url }}">{{ navbar_link.title }}</a>
-        {% else %}
-          <a class="site-navbar__link" href="{{ navbar_link.link }}">{{ navbar_link.title }}</a>
-        {% endif %}
-      {% endfor %}
+      {% include "partials/navbar_links.html" %}
     </div>
     <span class="site-navbar__version">{{ config.extra.displayed_version }}</span>
     {% include "partials/palette.html" %}
