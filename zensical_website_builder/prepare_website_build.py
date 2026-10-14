@@ -9,6 +9,7 @@ Usage:
 Then build with:  zensical build -f <folder>/zensical_config.yml
 """
 import argparse
+import json
 import os
 import shutil
 from pathlib import Path
@@ -24,6 +25,7 @@ SHARED_HTML_TEMPLATES_FOLDER: Path = TOOL_FOLDER / "shared_html_templates"
 INPUT_FOLDER_NAME: str = "input"
 OUTPUT_FOLDER_NAME: str = "output"
 ZENSICAL_CONFIG_FILE_NAME: str = "zensical_config.yml"
+VERSIONS_FILE_NAME: str = "versions.json"
 
 SOURCES_KEY: str = "documentation_sources"
 DEFAULT_VERSION: str = "dev"
@@ -42,6 +44,7 @@ def prepare_website_build(settings_file: Path, build_folder: Path, displayed_ver
 
     _copy_folder(SHARED_STYLE_AND_ICON_FOLDER, input_folder)
     _copy_declared_sources(settings_file.parent, source_entries, input_folder)
+    _write_versions_file(input_folder / VERSIONS_FILE_NAME, settings, displayed_version)
 
     zensical_config_file: Path = build_folder / ZENSICAL_CONFIG_FILE_NAME
     _complete_settings_for_zensical(settings, zensical_config_file, displayed_version)
@@ -89,6 +92,16 @@ def _read_yaml(file: Path) -> dict:
 def _write_yaml(file: Path, content: dict) -> None:
     file.parent.mkdir(parents=True, exist_ok=True)
     file.write_text(yaml.safe_dump(content, sort_keys=False, allow_unicode=True), encoding="utf-8")
+
+
+# -- Private: versions ------------------------------------------------------------------
+
+def _write_versions_file(versions_file: Path, settings: dict, displayed_version: str) -> None:
+    """Read by the version menu of every page: the current version first, then the earlier ones."""
+    current_version: dict = {"name": displayed_version, "link": settings["site_url"], "current": True}
+    previous_versions: list = settings["extra"].get("previous_versions", [])
+    versions: list = [current_version] + previous_versions
+    versions_file.write_text(json.dumps(versions, indent=2), encoding="utf-8")
 
 
 # -- Private: files ---------------------------------------------------------------------

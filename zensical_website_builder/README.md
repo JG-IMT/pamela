@@ -43,6 +43,17 @@ The website is written to `build/website/output`. The task chain:
 
 The version in the navbar is the Gradle project `version`.
 
+## Versions
+
+Every page has a version menu in the top bar. It reads `versions.json`, written at the root of
+the website by `prepare_website_build.py`:
+
+1. the current version first: the `--version` argument (Gradle passes the project version without
+   `-SNAPSHOT`), linked to `site_url`;
+2. then the `previous_versions` listed in `website_settings.yml`, each with a `name` and a `link`.
+
+Previous versions are not rebuilt: they stay where they are published, and the menu links to them.
+
 ## Preview it locally
 
 Run everything from `zensical_website_builder/`.

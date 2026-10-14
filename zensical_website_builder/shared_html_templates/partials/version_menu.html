@@ -1,0 +1,26 @@
+{# Lists the versions read from versions.json, which sits at the root of the website #}
+<details class="site-version-menu" data-versions-url="{{ 'versions.json' | url }}">
+  <summary>{{ config.extra.displayed_version }}</summary>
+  <ul class="site-version-menu__list"></ul>
+</details>
+<script>
+  (function fillVersionMenu() {
+    const versionMenu = document.querySelector(".site-version-menu");
+    const versionList = versionMenu.querySelector("ul");
+
+    function createVersionItem(version) {
+      const versionLink = document.createElement("a");
+      versionLink.href = version.link;
+      versionLink.textContent = version.name;
+      const versionItem = document.createElement("li");
+      versionItem.classList.toggle("site-version-menu__current", Boolean(version.current));
+      versionItem.append(versionLink);
+      return versionItem;
+    }
+
+    fetch(versionMenu.dataset.versionsUrl)
+      .then((response) => response.json())
+      .then((versions) => versions.forEach((version) => versionList.append(createVersionItem(version))))
+      .catch(() => versionMenu.classList.add("site-version-menu--unavailable"));
+  })();
+</script>

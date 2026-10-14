@@ -56,6 +56,12 @@ extra:
     - source: ../src/site/resources/examples
       destination: examples
   homepage: https://openflexo.org/pamela/
+  # Versions already published elsewhere, listed in the version menu after the current one
+  previous_versions:
+    - name: "1.6"
+      link: https://openflexo.org/pamela/docs/1.6/
+    - name: "1.5.0.1"
+      link: https://openflexo.org/pamela/docs/1.5.0.1/
   navbar_links:
     - title: Home
       link: https://openflexo.org/

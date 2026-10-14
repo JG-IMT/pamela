@@ -11,7 +11,9 @@
     <div class="site-navbar__links">
       {% include "partials/navbar_links.html" %}
     </div>
-    <span class="site-navbar__version">{{ config.extra.displayed_version }}</span>
+    <div class="site-navbar__version">
+      {% include "partials/version_menu.html" %}
+    </div>
     {% include "partials/palette.html" %}
     {% include "partials/javascripts/palette.html" %}
     <label class="md-header__button md-icon" for="__search" aria-label="{{ lang.t('search') }}">

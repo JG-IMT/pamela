@@ -25,6 +25,7 @@ def documentationBuilderFolder = file("zensical_website_builder")
 def websiteSettingsFile = file("pamela_website/website_settings.yml")
 def websiteBuildFolder = file("build/website")
 def zensicalConfigFile = new File(websiteBuildFolder, "zensical_config.yml")
+def displayedVersion = project.version.toString().replace("-SNAPSHOT", "")
 def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
 def systemPython = isWindows ? "python" : "python3"
 def environmentPython = new File(documentationBuilderFolder, isWindows ? ".venv/Scripts/python.exe" : ".venv/bin/python")
@@ -49,7 +50,7 @@ tasks.register("prepareDocumentationInput", Exec) {
     description = "Copies the repository Markdown into the folder Zensical reads and generates its config"
     dependsOn "setupDocumentationEnvironment"
     workingDir documentationBuilderFolder
-    commandLine environmentPython, "prepare_website_build.py", "--settings", websiteSettingsFile, "--build-folder", websiteBuildFolder, "--version", project.version.toString(), "--clean"
+    commandLine environmentPython, "prepare_website_build.py", "--settings", websiteSettingsFile, "--build-folder", websiteBuildFolder, "--version", displayedVersion, "--clean"
 }
 
 tasks.register("buildDocumentationSite", Exec) {

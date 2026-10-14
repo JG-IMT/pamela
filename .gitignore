@@ -22,3 +22,4 @@ build/
 
 # Python virtual environment of the documentation website
 /zensical_website_builder/.venv/
+to_discuss.md
