@@ -1,98 +1,49 @@
 # Website builder
 
-Builds a documentation website (menu, pages, search) from the Markdown kept in a repository,
-using [Zensical](https://zensical.org). Prerequisite: Python 3.11 or later.
+Builds a documentation website from the Markdown of a repository, with [Zensical](https://zensical.org).
+Needs Python 3.11 or later.
 
-## Who owns what
+## Structure
 
 ```
-pamela_website/                  1. Belongs to Pamela (you write it)
-└─ website_settings.yml             name, menu, links, folders holding the Markdown, logo
+pamela_website/             belongs to Pamela
+└─ website_settings.yml        name, menu, links, Markdown folders, previous versions
 
-zensical_website_builder/        2. The tool (the same for every repository)
+zensical_website_builder/   the tool, the same for every repository
 ├─ prepare_website_build.py
-├─ shared_site_settings.yml         theme, palette, extensions, footer
-├─ shared_html_templates/           header, footer, pagination
-├─ shared_style_and_icon/           site_style.css, favicon.ico
-└─ requirements.txt
+├─ shared_site_settings.yml    theme, footer
+├─ shared_html_templates/
+└─ shared_style_and_icon/
 
-build/website/                   3. Generated (ignored by git)
-├─ input/                           the Markdown copied here, read by Zensical
-├─ zensical_config.yml              shared settings completed by Pamela's
-└─ output/                          the website
+build/website/              generated: input/, zensical_config.yml, output/ (the website)
 ```
 
-Every Openflexo website shares the same look. To document another repository, create its own
-folder with a `website_settings.yml` (copy Pamela's) and run the same tool on it.
+To document another repository, write its own `website_settings.yml` and run the same tool.
 
-## Build it with Gradle
-
-From the repository root. This is what Jenkins runs as well.
+## Build
 
 ```bash
 ./gradlew buildDocumentationSite
 ```
 
-The website is written to `build/website/output`. The task chain:
+The website is written to `build/website/output`.
 
-| Task | What it does |
-|---|---|
-| `setupDocumentationEnvironment` | creates `.venv` and installs Zensical, only if `.venv` is missing |
-| `prepareDocumentationInput` | runs `prepare_website_build.py`: copies the Markdown, generates the Zensical config |
-| `buildDocumentationSite` | runs `zensical build` |
+## Preview
 
-The version in the navbar is the Gradle project `version`.
-
-## Versions
-
-Every page has a version menu in the top bar. It reads `versions.json`, written at the root of
-the website by `prepare_website_build.py`:
-
-1. the current version first: the `--version` argument (Gradle passes the project version without
-   `-SNAPSHOT`), linked to `site_url`;
-2. then the `previous_versions` listed in `website_settings.yml`, each with a `name` and a `link`.
-
-Previous versions are not rebuilt: they stay where they are published, and the menu links to them.
-
-## Preview it locally
-
-Run everything from `zensical_website_builder/`.
-
-**1. Create the environment (once).** Skip it if `./gradlew buildDocumentationSite` already ran:
-it creates `.venv`.
-
-```bash
-python -m venv .venv
-```
-
-**2. Activate it (each new terminal).**
+From `zensical_website_builder/`. Run the 4th command again after editing a Markdown file.
 
 ```powershell
-.venv\Scripts\Activate.ps1      # Windows PowerShell
-```
-
-```bash
-source .venv/bin/activate       # Linux, macOS
-```
-
-**3. Install Zensical (once).**
-
-```bash
-pip install -r requirements.txt
-```
-
-**4. Prepare the website files.** Run it again after editing a Markdown file: Zensical only
-watches its input folder, not the repository. Without `--version` the navbar shows "dev".
-
-```bash
+python -m venv .venv                                # once
+.venv\Scripts\Activate.ps1                          # each terminal (Linux, macOS: source .venv/bin/activate)
+pip install -r requirements.txt                     # once
 python prepare_website_build.py --settings ../pamela_website/website_settings.yml --build-folder ../build/website
-```
-
-**5. Start the server** and open http://localhost:8000. It can stay up between two runs of step 4.
-
-```bash
 zensical serve -f ../build/website/zensical_config.yml
 ```
 
-For a production build, add `--clean` to step 4 so that a page deleted from the repository
-cannot linger.
+Open http://localhost:8000. Without `--version` the navbar shows "dev".
+
+## Versions
+
+The version menu reads `versions.json`: the current version (`--version`, which Gradle sets from
+the project version), then the `previous_versions` of `website_settings.yml`. Previous versions are
+not rebuilt, the menu links to where they are published.
