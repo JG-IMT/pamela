@@ -145,11 +145,49 @@
 
 /* -- Page content -------------------------------------------------------------------- */
 
-.md-typeset h1 {
-  color: var(--site-text);
-  font-size: 2.4rem;
+.md-typeset {
+  line-height: 1.65;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  color: var(--md-typeset-color);
   font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: normal;
+  margin: 1.25em 0 1rem;
+}
+
+.md-typeset h1 {
+  font-size: 2.4rem;
+  margin-top: 0;
   margin-bottom: 1.25rem;
+}
+
+.md-typeset h2 { font-size: 2em; }
+.md-typeset h3 { font-size: 1.5em; }
+.md-typeset h4 { font-size: 1em; }
+.md-typeset h5 { font-size: 0.875em; }
+.md-typeset h6 { font-size: 0.85em; }
+
+.md-typeset p {
+  margin: 0 0 1rem;
+}
+
+.md-typeset code,
+.md-typeset kbd,
+.md-typeset pre {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.95em;
+}
+
+.md-typeset pre > code {
+  font-size: 1em;
+  line-height: 1.45;
 }
 
 .md-typeset a {
