@@ -275,6 +275,22 @@
   color: #e3e3e3;
 }
 
+.site-earlier-version-banner {
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #e6a700;
+  border-left-width: 0.3rem;
+  border-radius: 0.25rem;
+  background: #fff8e6;
+  color: #4d3800;
+  font-size: 0.7rem;
+}
+[data-md-color-scheme="slate"] .site-earlier-version-banner {
+  border-color: #d9a400;
+  background: #3b3217;
+  color: #f5e6b3;
+}
+
 .site-pagination {
   display: flex;
   gap: 1rem;

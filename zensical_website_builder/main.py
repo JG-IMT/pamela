@@ -2,7 +2,8 @@
 Entry point of the website builder.
 
 Usage:
-    python main.py prepare --settings <website_settings.yml> [--version 1.2.3] [--clean]
+    python main.py prepare --settings <website_settings.yml> [--version 1.2.3] [--latest-version 1.2.4]
+                           [--clean]
         Prepares what Zensical needs: the input folder (the project's Markdown and images, plus the
         files shared by every website) and the config file. Everything generated goes to the "build"
         folder next to website_settings.yml. Then build with:
@@ -13,8 +14,8 @@ Usage:
         (website_settings.yml) to the search index of the built website:
             extra:
               global_search:
-                - name: Connie
-                  site_url: https://openflexo.org/connie/docs/
+                - name: Other project
+                  site_url: https://openflexo.org/other_project/docs/
 """
 import argparse
 from pathlib import Path
@@ -31,7 +32,10 @@ BUILD_FOLDER_NAME: str = "build"
 
 def _prepare(arguments: argparse.Namespace) -> None:
     build_folder: Path = arguments.settings.parent / BUILD_FOLDER_NAME
-    website_input: WebsiteInput = WebsiteInput(WebsiteSettings(arguments.settings), build_folder, arguments.version)
+    latest_version: str = arguments.latest_version or arguments.version
+    website_input: WebsiteInput = WebsiteInput(
+        WebsiteSettings(arguments.settings), build_folder, arguments.version, latest_version
+    )
     print(f"Zensical config: {website_input.prepare(arguments.clean)}")
 
 
@@ -61,6 +65,7 @@ def _parse_arguments() -> argparse.Namespace:
 
     prepare_parser = commands.add_parser("prepare", help="prepare the input folder and the config of Zensical")
     prepare_parser.add_argument("--version", default=DEFAULT_VERSION, help="version shown in the website")
+    prepare_parser.add_argument("--latest-version", help="latest version, for an earlier version (adds a banner)")
     prepare_parser.add_argument("--clean", action="store_true", help="delete the input folder first")
     prepare_parser.set_defaults(run=_prepare)
 

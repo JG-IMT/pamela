@@ -6,6 +6,12 @@
     {% include "partials/navbar_links.html" %}
   </nav>
   <div class="site-version-badge">Version: {{ config.extra.displayed_version }}</div>
+  {% if config.extra.latest_version != config.extra.displayed_version %}
+    <div class="site-earlier-version-banner">
+      This is documentation for {{ config.site_name }} {{ config.extra.displayed_version }}, which is no longer actively maintained.
+      For up-to-date documentation, see the <a href="{{ config.site_url }}">latest version ({{ config.extra.latest_version }})</a>.
+    </div>
+  {% endif %}
   {{ super() }}
   {% if page.previous_page or page.next_page %}
     <nav class="site-pagination" aria-label="Pagination">

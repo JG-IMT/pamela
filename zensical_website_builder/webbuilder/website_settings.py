@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import urlparse
 
 import yaml
 
@@ -28,13 +29,18 @@ class WebsiteSettings:
         return self.values["site_url"]
 
     @property
+    def project_path(self) -> str:
+        """The project path on its domain, from "homepage" (https://openflexo.org/my_project/ gives "my_project")."""
+        homepage_url: str = self.values["extra"].get("homepage", "")
+        return urlparse(homepage_url).path.strip("/")
+
+    @property
     def previous_versions(self) -> list:
         return self.values["extra"].get("previous_versions", [])
 
     @property
     def other_websites(self) -> list:
-        extra: dict = self.values.get("extra") or {}
-        return extra.get(GLOBAL_SEARCH_KEY, [])
+        return self.values["extra"].get(GLOBAL_SEARCH_KEY, [])
 
     # -- Private: sources ---------------------------------------------------------------
 

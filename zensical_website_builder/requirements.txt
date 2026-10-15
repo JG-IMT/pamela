@@ -1,1 +1,2 @@
+# Python 3.11 to 3.13 (3.14 and later: PyYAML and Zensical do not install yet)
 zensical>=0.0.60,<0.1.0
