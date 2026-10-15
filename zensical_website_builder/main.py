@@ -48,6 +48,13 @@ def _search(arguments: argparse.Namespace) -> None:
 
 # -- Command line -----------------------------------------------------------------------
 
+def _existing_file(argument: str) -> Path:
+    file: Path = Path(argument)
+    if not file.is_file():
+        raise argparse.ArgumentTypeError(f"{file} is not an existing file (expected a website_settings.yml)")
+    return file
+
+
 def _parse_arguments() -> argparse.Namespace:
     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="Website builder, based on Zensical.")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -61,7 +68,8 @@ def _parse_arguments() -> argparse.Namespace:
     search_parser.set_defaults(run=_search)
 
     for command_parser in (prepare_parser, search_parser):
-        command_parser.add_argument("--settings", type=Path, required=True, help="website_settings.yml of the project")
+        command_parser.add_argument("--settings", type=_existing_file, required=True,
+                                    help="website_settings.yml of the project")
     return parser.parse_args()
 
 
