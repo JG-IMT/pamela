@@ -2,13 +2,13 @@
 Entry point of the website builder.
 
 Usage:
-    python main.py prepare --settings <website_settings.yml> --build-folder <folder>
-                           [--version 1.2.3] [--clean]
+    python main.py prepare --settings <website_settings.yml> [--version 1.2.3] [--clean]
         Prepares what Zensical needs: the input folder (the project's Markdown and images, plus the
-        files shared by every website) and the config file. Then build with:
-        zensical build -f <folder>/zensical_config.yml
+        files shared by every website) and the config file. Everything generated goes to the "build"
+        folder next to website_settings.yml. Then build with:
+        zensical build -f <build folder>/zensical_config.yml
 
-    python main.py search --settings <website_settings.yml> --build-folder <folder>
+    python main.py search --settings <website_settings.yml>
         After the build, adds the pages of the websites declared under extra.global_search
         (website_settings.yml) to the search index of the built website:
             extra:
@@ -24,21 +24,22 @@ from webbuilder.website_input import OUTPUT_FOLDER_NAME, WebsiteInput
 from webbuilder.website_settings import WebsiteSettings
 
 DEFAULT_VERSION: str = "dev"
+BUILD_FOLDER_NAME: str = "build"
 
 
 # -- Commands ---------------------------------------------------------------------------
 
 def _prepare(arguments: argparse.Namespace) -> None:
-    website_input: WebsiteInput = WebsiteInput(
-        WebsiteSettings(arguments.settings), arguments.build_folder, arguments.version
-    )
+    build_folder: Path = arguments.settings.parent / BUILD_FOLDER_NAME
+    website_input: WebsiteInput = WebsiteInput(WebsiteSettings(arguments.settings), build_folder, arguments.version)
     print(f"Zensical config: {website_input.prepare(arguments.clean)}")
 
 
 def _search(arguments: argparse.Namespace) -> None:
+    build_folder: Path = arguments.settings.parent / BUILD_FOLDER_NAME
     settings: WebsiteSettings = WebsiteSettings(arguments.settings)
     search_index: SearchIndex = SearchIndex(
-        arguments.build_folder / OUTPUT_FOLDER_NAME / SEARCH_INDEX_FILE_NAME, settings.site_url
+        build_folder / OUTPUT_FOLDER_NAME / SEARCH_INDEX_FILE_NAME, settings.site_url
     )
     added_entries_count: int = search_index.add_other_websites(settings.other_websites)
     search_index.save()
@@ -61,7 +62,6 @@ def _parse_arguments() -> argparse.Namespace:
 
     for command_parser in (prepare_parser, search_parser):
         command_parser.add_argument("--settings", type=Path, required=True, help="website_settings.yml of the project")
-        command_parser.add_argument("--build-folder", type=Path, required=True, help="folder holding everything generated")
     return parser.parse_args()
 
 

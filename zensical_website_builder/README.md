@@ -23,7 +23,7 @@ Zensical-WebBuilder/        the tool, the same for every repository
 └─ examples/
    └─ website_settings.yml     template to copy for a new repository
 
-build/website/              generated: input/, zensical_config.yml, output/ (the website)
+build/                      generated next to website_settings.yml: input/, zensical_config.yml, output/ (the website)
 ```
 
 To document another repository, copy `examples/website_settings.yml`, adapt it and run the same tool.
@@ -38,15 +38,17 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Then, with the `website_settings.yml` of the repository and a folder receiving what is generated:
+Then, with `<website folder>` the folder holding the `website_settings.yml` of the repository:
 
 ```powershell
-python main.py prepare --settings <website_settings.yml> --build-folder <build_folder> --version <version>
-zensical build --clean -f <build_folder>/zensical_config.yml
+python main.py prepare --settings <website folder>\website_settings.yml --version <version>
+zensical build --clean -f <website folder>\build\zensical_config.yml
 ```
 
-The website is written to `<build_folder>/output`. A repository can run these commands from its own
-build (a Gradle task, for example).
+For example, with `..\my_project_website\website_settings.yml`, the config is
+`..\my_project_website\build\zensical_config.yml` (the folder, not the file, followed by `build`).
+Everything generated goes to this `build` folder, and the website is written to `build\output`. A repository can run these commands from its own build (a Gradle task,
+for example).
 
 ## Preview
 
@@ -54,7 +56,7 @@ Replace the last command above by the following one, and run the `main.py prepar
 again after editing a Markdown file.
 
 ```powershell
-zensical serve -f <build_folder>/zensical_config.yml
+zensical serve -f <website folder>\build\zensical_config.yml
 ```
 
 Open http://localhost:8000. Without `--version` the navbar shows "dev".
@@ -74,7 +76,7 @@ The search box of a website can also find the pages of the other Openflexo websi
 in `website_settings.yml` (see `examples/website_settings.yml`), then, after `zensical build`:
 
 ```bash
-python main.py search --settings <website_settings.yml> --build-folder <folder>
+python main.py search --settings <website_settings.yml>
 ```
 
 The `search.json` of the other websites is downloaded when the script runs. A website that cannot be
