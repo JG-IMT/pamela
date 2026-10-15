@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{# Around each page: links (narrow screens), version badge, Previous / Next #}
+{% block content %}
+  <nav class="site-mobile-links" aria-label="Site links">
+    {% include "partials/navbar_links.html" %}
+  </nav>
+  <div class="site-version-badge">Version: {{ config.extra.displayed_version }}</div>
+  {{ super() }}
+  {% if page.previous_page or page.next_page %}
+    <nav class="site-pagination" aria-label="Pagination">
+      {% if page.previous_page %}
+        <a class="site-pagination__previous" href="{{ page.previous_page.url | url }}">
+          <span>Previous</span>
+          <strong>« {{ page.previous_page.title }}</strong>
+        </a>
+      {% endif %}
+      {% if page.next_page %}
+        <a class="site-pagination__next" href="{{ page.next_page.url | url }}">
+          <span>Next</span>
+          <strong>{{ page.next_page.title }} »</strong>
+        </a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endblock %}

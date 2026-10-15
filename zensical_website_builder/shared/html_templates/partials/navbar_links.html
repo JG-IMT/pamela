@@ -1,0 +1,8 @@
+{# Top-bar links, shown in the bar (wide screens) or above the page (narrow ones) #}
+{% for navbar_link in config.extra.navbar_links %}
+  {% if navbar_link.is_current_site %}
+    <a class="site-navbar__link site-navbar__link--current" href="{{ nav.homepage.url | url }}">{{ navbar_link.title }}</a>
+  {% else %}
+    <a class="site-navbar__link" href="{{ navbar_link.link }}">{{ navbar_link.title }}</a>
+  {% endif %}
+{% endfor %}
