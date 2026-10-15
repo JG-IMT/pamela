@@ -82,3 +82,47 @@ subprojects {
 
 version = "1.6.1"
 apply plugin: 'org.openflexo.buildconfig'
+
+
+// -- Documentation website (Zensical) -----------------------------------------------------
+
+def documentationBuilderFolder = file("zensical_website_builder")
+def websiteSettingsFile = file("pamela_website/website_settings.yml")
+def zensicalConfigFile = file("pamela_website/build/zensical_config.yml")
+def displayedVersion = project.version.toString().replace("-SNAPSHOT", "")
+def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+def systemPython = isWindows ? "python" : "python3"
+def environmentPython = new File(documentationBuilderFolder, isWindows ? ".venv/Scripts/python.exe" : ".venv/bin/python")
+def environmentZensical = new File(documentationBuilderFolder, isWindows ? ".venv/Scripts/zensical.exe" : ".venv/bin/zensical")
+
+tasks.register("createDocumentationEnvironment", Exec) {
+    group = "documentation"
+    description = "Creates the Python environment (Python 3.11 to 3.13 required)"
+    workingDir = documentationBuilderFolder
+    onlyIf { !environmentPython.exists() }
+    commandLine systemPython, "-m", "venv", ".venv"
+}
+
+tasks.register("installDocumentationTools", Exec) {
+    group = "documentation"
+    description = "Installs Zensical in the Python environment"
+    dependsOn "createDocumentationEnvironment"
+    workingDir = documentationBuilderFolder
+    commandLine environmentPython, "-m", "pip", "install", "-r", "requirements.txt"
+}
+
+tasks.register("prepareDocumentationInput", Exec) {
+    group = "documentation"
+    description = "Copies the repository Markdown into the folder Zensical reads and generates its config"
+    dependsOn "installDocumentationTools"
+    workingDir = documentationBuilderFolder
+    commandLine environmentPython, "main.py", "prepare", "--settings", websiteSettingsFile, "--version", displayedVersion, "--clean"
+}
+
+tasks.register("buildDocumentationSite", Exec) {
+    group = "documentation"
+    description = "Builds the documentation website in pamela_website/build/output"
+    dependsOn "prepareDocumentationInput"
+    workingDir = documentationBuilderFolder
+    commandLine environmentZensical, "build", "--clean", "-f", zensicalConfigFile
+}
