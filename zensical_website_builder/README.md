@@ -58,4 +58,3 @@ zensical serve -f path\to\build\zensical_config.yml
 ```
 
 - Links starting with `/` are fixed in the build, the Markdown of your repository is not changed.
-- The search can also find the pages of other Openflexo websites: see `global_search` in the example.

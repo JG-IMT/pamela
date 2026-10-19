@@ -30,10 +30,6 @@ extra:
     - source: src/site/resources/images
       destination: images
   homepage: https://openflexo.org/my_project/
-  # Other Openflexo websites (same domain) whose pages the search box also finds
-  global_search:
-    - name: Other project
-      site_url: https://openflexo.org/other_project/docs/
   navbar_links:
     - title: Home
       link: https://openflexo.org/
