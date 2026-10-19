@@ -7,27 +7,29 @@ site_url: https://openflexo.org/my_project/docs/
 theme:
   logo: images/logo.png
 
-# Menu order and sections; page titles come from each page's H1
-nav:
-  - index.md
-  - getting_started.md
-  - Section name:
-    - my-module/index.md
-
 extra:
-  # Folders copied into the website, relative to this file. A later entry overwrites an earlier one.
+  # Repository the versions are built from
+  repository_url: https://github.com/my_organization/my_project.git
+  versions:
+    - name: "2.0"
+      git_ref: "2.0"
+      is_latest: true
+      navigation:
+        - index.md
+        - getting_started.md
+        - Section name:
+          - my-module/index.md
+    - name: "1.0"
+      git_ref: "1.0"
+  # Folders copied into the website, relative to the repository root. A later entry overwrites an earlier one.
   documentation_sources:
-    - source: ../src/site/markdown
+    - source: src/site/markdown
       destination: .
-    - source: ../my-module/src/site/markdown
+    - source: my-module/src/site/markdown
       destination: my-module
-    - source: ../src/site/resources/images
+    - source: src/site/resources/images
       destination: images
   homepage: https://openflexo.org/my_project/
-  # Versions already published elsewhere, listed in the version menu after the current one
-  previous_versions:
-    - name: "1.0"
-      link: https://openflexo.org/my_project/docs/1.0/
   # Other Openflexo websites (same domain) whose pages the search box also finds
   global_search:
     - name: Other project

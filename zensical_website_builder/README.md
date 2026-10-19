@@ -1,11 +1,11 @@
 # Website builder
 
-Builds a documentation website from the Markdown of a repository, with [Zensical](https://zensical.org).
-The same tool, theme and footer for every repository: each one only brings a `website_settings.yml`.
+Builds a documentation website, with all its versions, from the Markdown of a repository, using
+[Zensical](https://zensical.org).
 
 ## Install (once)
 
-Python 3.11 to 3.13 is required (3.14 and later do not work yet).
+Needs Python 3.11 or later and git.
 
 ```powershell
 python -m venv .venv
@@ -13,49 +13,49 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-On Linux and macOS: `source .venv/bin/activate`. If PowerShell blocks the script, run
-`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first.
+On Linux and macOS: `source .venv/bin/activate`.
 
-## Use
+## Build your website
 
-For a new repository, copy `examples/website_settings.yml` and adapt it. Then:
-
-```powershell
-python main.py prepare --settings ..\my_site\website_settings.yml --version 1.6.1
-zensical build --clean -f ..\my_site\build\zensical_config.yml
-```
-
-Everything is generated in the `build` folder next to `website_settings.yml`; the website is in
-`build\output`. To preview it on http://localhost:8000, replace the second command by:
+1. Copy `examples/website_settings.yml` into your repository and adapt it (it is commented).
+2. Build, then open http://localhost:8000:
 
 ```powershell
-zensical serve -f ..\my_site\build\zensical_config.yml
+python main.py build --settings path\to\website_settings.yml
+python main.py serve --settings path\to\website_settings.yml
 ```
 
-## Features
+The website is in the `build\output` folder next to `website_settings.yml`.
 
-**Links starting with "/"** (e.g. `![](/images/a.png)`) break under `openflexo.org/<project>/docs/`.
-`prepare` fixes them in its copy of the pages, the Markdown of the repository is not changed:
+## Settings
 
-- the target is in the website: the link becomes relative (declare its folder in `documentation_sources`)
-- the link already starts with the project path (`/my_project/javadoc/...`): unchanged
-- otherwise the project path is put in front (`/javadoc/...` becomes `/my_project/javadoc/...`)
+In `website_settings.yml`, under `extra:`:
 
-The project path comes from `homepage` in `website_settings.yml`.
+```yaml
+repository_url: https://github.com/my_organization/my_project.git
+versions:
+  - name: "2.0"
+    git_ref: "2.0"      # a branch or a tag
+    is_latest: true     # exactly one version
+  - name: "1.0"
+    git_ref: "1.0"
+documentation_sources:  # folders of the repository holding the Markdown and the images
+  - source: src/site/markdown
+    destination: .
+```
 
-**Versions**: the menu lists the version being built, then the `previous_versions` of
-`website_settings.yml`. To build an earlier version, name the latest one: every page then shows a
-banner linking to it.
+The latest version is served at `site_url`, the others in `site_url/<name>/`. Quote `name` and
+`git_ref`. If something is wrong, the build stops and says what.
+
+## Good to know
+
+- `build` reads git: commit and push your work first, or add `--repository-url <your folder>`.
+- To preview your Markdown while writing, without building the other versions:
 
 ```powershell
-python main.py prepare --settings ..\my_site\website_settings.yml --version 1.6 --latest-version 1.6.1
+python main.py prepare --settings path\to\website_settings.yml
+zensical serve -f path\to\build\zensical_config.yml
 ```
 
-**Global search**: to also find the pages of other Openflexo websites, declare them under
-`global_search` in `website_settings.yml`, then run after `zensical build`:
-
-```powershell
-python main.py search --settings ..\my_site\website_settings.yml
-```
-
-The websites must share the same domain; one that cannot be reached is skipped with a warning.
+- Links starting with `/` are fixed in the build, the Markdown of your repository is not changed.
+- The search can also find the pages of other Openflexo websites: see `global_search` in the example.

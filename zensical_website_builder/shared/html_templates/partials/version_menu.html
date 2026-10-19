@@ -1,4 +1,4 @@
-{# Lists the versions read from versions.json, which sits at the root of the website #}
+{# Lists the versions read from versions.json, which sits at the root of the displayed version #}
 <details class="site-version-menu" data-versions-url="{{ 'versions.json' | url }}">
   <summary>{{ config.extra.displayed_version }}</summary>
   <ul class="site-version-menu__list"></ul>
@@ -7,11 +7,18 @@
   (function fillVersionMenu() {
     const versionMenu = document.querySelector(".site-version-menu");
     const versionList = versionMenu.querySelector("ul");
+    const displayedVersionRoot = new URL(".", new URL(versionMenu.dataset.versionsUrl, location.href));
+    const pagePath = location.pathname.slice(displayedVersionRoot.pathname.length);
 
     function createVersionItem(version) {
+      const versionRoot = new URL(version.link + "/", displayedVersionRoot);
       const versionLink = document.createElement("a");
-      versionLink.href = version.link;
+      versionLink.href = versionRoot;
       versionLink.textContent = version.name;
+      const samePageInVersion = new URL(pagePath, versionRoot);
+      fetch(samePageInVersion, { method: "HEAD" })
+        .then((response) => { if (response.ok) versionLink.href = samePageInVersion; })
+        .catch(() => {});
       const versionItem = document.createElement("li");
       versionItem.classList.toggle("site-version-menu__current", Boolean(version.current));
       versionItem.append(versionLink);
