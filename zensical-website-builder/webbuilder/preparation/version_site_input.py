@@ -50,13 +50,12 @@ class VersionSiteInput:
 
     def prepare(self) -> Path:
         """
-        Starts from an empty input folder, copies the shared style and the declared sources into it,
-        rewrites the paths starting with "/" in the copies of the pages, then writes the menu of
-        versions and the Zensical config. Stops, naming the version, if a source folder is missing or
-        if no Markdown page is found. Returns the Zensical config file.
+        Copies the shared style and the declared sources into the input folder, rewrites the paths
+        starting with "/" in the copies of the pages, then writes the menu of versions and the Zensical
+        config. Stops, naming the version, if a source folder is missing or if no Markdown page is
+        found. Returns the Zensical config file.
         """
-        self._delete_zensical_input_folder()
-
+        # The input folder does not exist yet: WebsiteBuild empties the build folders of the versions first.
         self._copy_folder(SHARED_STYLE_AND_ICON_FOLDER, self.zensical_input_folder)
         self._copy_declared_sources()
 
@@ -73,11 +72,6 @@ class VersionSiteInput:
 
 
     # -- Private: files ------------------------------------------------------------------------------
-
-    def _delete_zensical_input_folder(self) -> None:
-        if self.zensical_input_folder.exists():
-            shutil.rmtree(self.zensical_input_folder)
-
 
     def _copy_declared_sources(self) -> None:
         for source_entry in self.settings.sources:
