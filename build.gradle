@@ -86,8 +86,9 @@ apply plugin: 'org.openflexo.buildconfig'
 
 // -- Documentation website (Zensical) -----------------------------------------------------
 
-def documentationBuilderFolder = file("zensical_website_builder")
-def websiteSettingsFile = file("pamela_website/website_settings.yml")
+def documentationBuilderFolder = file("zensical-website-builder")
+def websiteSettingsFile = file("pamela-website/website_settings.yml")
+def websiteFolder = file("pamela-website/build/website")
 def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
 def systemPython = isWindows ? "python" : "python3"
 def environmentPython = new File(documentationBuilderFolder, isWindows ? ".venv/Scripts/python.exe" : ".venv/bin/python")
@@ -110,16 +111,16 @@ tasks.register("installDocumentationTools", Exec) {
 
 tasks.register("buildDocumentationSite", Exec) {
     group = "documentation"
-    description = "Builds every version of the documentation website in pamela_website/build/output"
+    description = "Builds every version of the documentation website in pamela-website/build/website"
     dependsOn "installDocumentationTools"
     workingDir = documentationBuilderFolder
-    commandLine environmentPython, "main.py", "build", "--settings", websiteSettingsFile
+    commandLine environmentPython, "main.py", "--settings", websiteSettingsFile
 }
 
 tasks.register("serveDocumentationSite", Exec) {
     group = "documentation"
-    description = "Serves pamela_website/build/output on http://localhost:8000 (build it first)"
-    dependsOn "installDocumentationTools"
+    description = "Serves pamela-website/build/website on http://localhost:8000 (build it first)"
+    dependsOn "createDocumentationEnvironment"
     workingDir = documentationBuilderFolder
-    commandLine environmentPython, "main.py", "serve", "--settings", websiteSettingsFile
+    commandLine environmentPython, "-m", "http.server", "8000", "--bind", "localhost", "--directory", websiteFolder
 }

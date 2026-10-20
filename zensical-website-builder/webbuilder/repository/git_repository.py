@@ -1,7 +1,7 @@
 """
 The git operations of the tool, run with the git command of the machine: cloning one version of a
-repository at its git reference, deleting that clone, and finding the root of the repository around
-a folder. A failure stops the build with one line, naming what failed.
+repository at its git reference, and deleting that clone. A failure stops the build with one line,
+naming what failed.
 """
 
 import os
@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 class GitRepository:
-    """Git operations on a repository: cloning it at a git reference, finding the root of the one around a folder."""
+    """Git operations on a repository: cloning it at a git reference, and deleting a clone."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class GitRepository:
         self._repository_url: str = repository_url  # an address, or a folder on this machine
 
 
-    # -- Public: clone, delete and root --------------------------------------------------------------
+    # -- Public: clone and delete --------------------------------------------------------------------
 
     def clone_at(self, git_ref: str, destination_folder: Path) -> None:
         """Clones only the latest state of a branch or a tag (shallow), which is all the build needs."""
@@ -39,15 +39,6 @@ class GitRepository:
         """
         if folder.exists():
             shutil.rmtree(folder, onerror=GitRepository._retry_after_making_writable)
-
-
-    @staticmethod
-    def find_repository_root_containing(folder: Path) -> Path:
-        git_arguments: list[str] = ["-C", str(folder), "rev-parse", "--show-toplevel"]
-        result: subprocess.CompletedProcess = GitRepository._run_git(git_arguments)
-        if result.returncode != 0:
-            raise SystemExit(f"{folder} is not inside a git repository")
-        return Path(result.stdout.strip())
 
 
     # -- Private: git --------------------------------------------------------------------------------

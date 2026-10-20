@@ -36,7 +36,7 @@ class WebsiteSettings:
 
         self.sources: list[dict] = self._pop_required_from_extra(SOURCES_KEY, "folders to copy")
         self._check_sources_have_source_and_destination()
-        self._repository_url: str | None = self.zensical_values["extra"].pop(REPOSITORY_URL_KEY, None)  # "build" only
+        self.repository_url: str = self._pop_required_from_extra(REPOSITORY_URL_KEY, "repository to clone")
         declared_versions: list[dict] = self._pop_required_from_extra(VERSIONS_KEY, "versions to build")
         self.versions: WebsiteVersions = self._create_versions(declared_versions)
 
@@ -48,15 +48,6 @@ class WebsiteSettings:
         """The project path in URLs, from "homepage": https://openflexo.org/my_project/ gives "my_project"."""
         homepage_url: str = self.zensical_values["extra"].get("homepage", "")
         return urlparse(homepage_url).path.strip("/")
-
-
-    def repository_url_to_clone(self, override_url: str | None) -> str:
-        """The repository to clone: the one given on the command line, else the one of the settings."""
-        repository_url: str | None = override_url or self._repository_url
-        if not repository_url:
-            raise SystemExit(f"{self._project_settings_file}: no '{REPOSITORY_URL_KEY}' under 'extra:' "
-                             "(repository to clone), and no --repository-url given")
-        return repository_url
 
 
     # -- Private: reading ----------------------------------------------------------------------------

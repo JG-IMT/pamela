@@ -16,8 +16,8 @@ class WebsitePathResolver:
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, input_folder: Path, project_url_path: str = "") -> None:
-        self.input_folder: Path = input_folder
+    def __init__(self, zensical_input_folder: Path, project_url_path: str = "") -> None:
+        self.zensical_input_folder: Path = zensical_input_folder
         self.project_url_path: str = project_url_path
 
         self._reported_guesses: set[tuple[Path, str]] = set()  # one warning per guessed path and per page
@@ -45,11 +45,11 @@ class WebsitePathResolver:
     def _target_is_in_website(self, link_path_without_first_slash: str) -> bool:
         link_path_without_fragment_or_query: str = re.split(r"[#?]", link_path_without_first_slash)[0]
         target_path: str = unquote(link_path_without_fragment_or_query)  # "my%20image.png" is the file "my image.png"
-        return (self.input_folder / target_path).exists()
+        return (self.zensical_input_folder / target_path).exists()
 
 
     def _relative_to_page(self, link_path_without_first_slash: str, page_file: Path) -> str:
-        page_folder: str = page_file.parent.relative_to(self.input_folder).as_posix()
+        page_folder: str = page_file.parent.relative_to(self.zensical_input_folder).as_posix()
         return posixpath.relpath(link_path_without_first_slash, start=page_folder)
 
 
@@ -71,6 +71,6 @@ class WebsitePathResolver:
             return
         self._reported_guesses.add(guess)
 
-        page_path_in_website: str = page_file.relative_to(self.input_folder).as_posix()
+        page_path_in_website: str = page_file.relative_to(self.zensical_input_folder).as_posix()
         original_link_path: str = "/" + link_path_without_first_slash
         print(f"Warning: {page_path_in_website}: {original_link_path} treated as {guessed_path}")

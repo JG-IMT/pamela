@@ -18,14 +18,24 @@ On Linux and macOS: `source .venv/bin/activate`.
 ## Build your website
 
 1. Copy `examples/website_settings.yml` into your repository and adapt it (it is commented).
-2. Build, then open http://localhost:8000:
+2. Build:
 
 ```powershell
-python main.py build --settings path\to\website_settings.yml
-python main.py serve --settings path\to\website_settings.yml
+python main.py --settings path\to\website_settings.yml
 ```
 
-The website is in the `build\output` folder next to `website_settings.yml`.
+The website is in the `build\website` folder next to `website_settings.yml`. To look at it, serve that
+folder with any web server, for example `python -m http.server 8000 --directory build\website`, then open
+http://localhost:8000.
+
+## Command line
+
+```powershell
+python main.py --settings website_settings.yml
+```
+
+`--settings` is the path of your `website_settings.yml` (required). The command clones and builds every
+version declared in the settings, and assembles them in `build\website`.
 
 ## Settings
 
@@ -49,12 +59,5 @@ The latest version is served at `site_url`, the others in `site_url/<name>/`. Qu
 
 ## Good to know
 
-- `build` reads git: commit and push your work first, or add `--repository-url <your folder>`.
-- To preview your Markdown while writing, without building the other versions:
-
-```powershell
-python main.py prepare --settings path\to\website_settings.yml
-zensical serve -f path\to\build\zensical_config.yml
-```
-
+- `build` reads git: commit and push your work first.
 - Links starting with `/` are fixed in the build, the Markdown of your repository is not changed.
