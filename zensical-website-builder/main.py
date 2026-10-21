@@ -20,10 +20,10 @@ BUILD_FOLDER_NAME: str = "build"
 
 # -- Build ----------------------------------------------------------------------------------------------
 
-def _build_website(settings_file: Path) -> None:
-    settings: WebsiteSettings = WebsiteSettings(settings_file)
-    git_repository: GitRepository = GitRepository(settings.repository_url)
-    WebsiteBuild(settings, git_repository, settings_file.parent / BUILD_FOLDER_NAME).build()
+def _build_website(project_settings_file: Path) -> None:
+    website_settings: WebsiteSettings = WebsiteSettings(project_settings_file)
+    git_repository: GitRepository = GitRepository(website_settings.get_repository_url())
+    WebsiteBuild(website_settings, git_repository, project_settings_file.parent.joinpath(BUILD_FOLDER_NAME)).build()
 
 
 # -- Command line ---------------------------------------------------------------------------------------

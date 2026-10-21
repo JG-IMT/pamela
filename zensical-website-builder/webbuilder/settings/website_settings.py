@@ -1,128 +1,171 @@
 """
-Reads the settings of one website: the settings shared by every website (shared/site_settings.yml)
+Reads the settings of one website: the settings shared by every website (shared/default_settings.yml)
 completed by the settings of the project (website_settings.yml), and checks them when they are read,
-so that a wrong file stops the build with one line naming it. The values Zensical needs stay in
-zensical_values; the settings of this tool - the folders to copy, the repository, the versions - are
-taken out of them, because Zensical must not receive them.
+so that a wrong file stops the build with one line naming it.
 """
 
+import copy
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
 
 import yaml
 
-from webbuilder.settings.website_versions import WebsiteVersions
-from webbuilder.shared_files import SHARED_SETTINGS_FILE
+from webbuilder.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.shared_paths import DEFAULT_SETTINGS_FILE
 
-SOURCES_KEY: str = "documentation_sources"
+DOCUMENTATION_SOURCES_KEY: str = "documentation_sources"
 REPOSITORY_URL_KEY: str = "repository_url"
 VERSIONS_KEY: str = "versions"
 NAVIGATION_KEY: str = "nav"
 
 
 class WebsiteSettings:
-    """The settings shared by every website, completed by the settings of one project, and checked."""
+    """Reads the settings shared by every website and completes them by the settings of one project."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
     def __init__(self, project_settings_file: Path) -> None:
         self._project_settings_file: Path = project_settings_file
 
-        shared_settings: dict = self._read_yaml_file(SHARED_SETTINGS_FILE)
-        self.zensical_values: dict = self._merge(shared_settings, self._read_project_settings())
-        self._check_site_url_is_text()
-        self._check_extra_is_a_mapping()
-        self._check_no_global_navigation()
+        # What Zensical receives: the default settings overridden by the project settings.
+        default_settings: dict = self._read_settings_file(DEFAULT_SETTINGS_FILE)
+        project_settings: dict = self._read_settings_file(self._project_settings_file)
+        self._zensical_settings: dict = self._merge_settings(default_settings, project_settings)
+        self._check_zensical_settings()
 
-        self.sources: list[dict] = self._pop_required_from_extra(SOURCES_KEY, "folders to copy")
-        self._check_sources_have_source_and_destination()
-        self.repository_url: str = self._pop_required_from_extra(REPOSITORY_URL_KEY, "repository to clone")
-        declared_versions: list[dict] = self._pop_required_from_extra(VERSIONS_KEY, "versions to build")
-        self.versions: WebsiteVersions = self._create_versions(declared_versions)
+        # What only the website builder needs (not Zensical): taken out of the settings above.
+        self._documentation_sources: list[dict] = self._extract_documentation_sources()
+        self._repository_url: str = self._extract_repository_url()
+        self._version_catalog: WebsiteVersionCatalog = self._extract_version_catalog()
 
 
-    # -- Public: settings ----------------------------------------------------------------------------
+    # -- Public: get settings ------------------------------------------------------------------------
 
-    @property
-    def project_url_path(self) -> str:
+    def get_zensical_settings(self) -> dict:
+        """
+        A copy of the settings Zensical receives: the default settings overridden by the project settings,
+        without the ones only the website builder needs (documentation sources, repository URL, versions).
+        """
+        return copy.deepcopy(self._zensical_settings)
+
+
+    def get_documentation_sources(self) -> list[dict]:
+        """A copy of the folders of the repository to copy into the website, each with its 'source' and 'destination'."""
+        return copy.deepcopy(self._documentation_sources)
+
+
+    def get_repository_url(self) -> str:
+        """The git repository the versions are cloned from."""
+        return self._repository_url
+
+
+    def get_version_catalog(self) -> WebsiteVersionCatalog:
+        """The versions of the website, and where each one is in the website."""
+        return self._version_catalog
+
+
+    def get_project_url_path(self) -> str:
         """The project path in URLs, from "homepage": https://openflexo.org/my_project/ gives "my_project"."""
-        homepage_url: str = self.zensical_values["extra"].get("homepage", "")
+        homepage_url: str = self._zensical_settings["extra"].get("homepage", "")
         return urlparse(homepage_url).path.strip("/")
 
 
     # -- Private: reading ----------------------------------------------------------------------------
 
-    def _read_project_settings(self) -> dict:
-        project_settings = self._read_yaml_file(self._project_settings_file)
-        if not isinstance(project_settings, dict):
-            raise SystemExit(f"{self._project_settings_file}: no settings (the file is empty or has no 'key: value')")
-        return project_settings
-
-
     @staticmethod
-    def _read_yaml_file(file: Path):
+    def _read_settings_file(file: Path) -> dict:
+        """Reads a settings file. Throw an error if it is not valid YAML or has no 'key: value' settings."""
         try:
-            return yaml.safe_load(file.read_text(encoding="utf-8"))
+            file_settings: object = yaml.safe_load(file.read_text(encoding="utf-8"))
         except yaml.YAMLError as error:
             raise SystemExit(f"{file}: not valid YAML ({error})")
+        if not isinstance(file_settings, dict):
+            raise SystemExit(f"{file}: no settings (the file is empty or has no 'key: value')")
+        return file_settings
 
 
     @staticmethod
-    def _merge(shared: dict, project: dict) -> dict:
-        """The project wins; nested sections are merged key by key, lists are replaced."""
-        merged: dict = dict(shared)
-        for key, project_value in project.items():
-            shared_value = shared.get(key)
-            if isinstance(shared_value, dict) and isinstance(project_value, dict):
-                merged[key] = WebsiteSettings._merge(shared_value, project_value)
+    def _merge_settings(default_settings: dict, project_settings: dict) -> dict:
+        """Overrides default settings with project settings, key by key."""
+        merged_settings: dict = dict(default_settings)
+        for key, project_value in project_settings.items():
+            default_value: object = default_settings.get(key)
+            if isinstance(default_value, dict) and isinstance(project_value, dict):
+                merged_settings[key] = WebsiteSettings._merge_settings(default_value, project_value)
             else:
-                merged[key] = project_value
-        return merged
+                merged_settings[key] = project_value
+        return merged_settings
 
 
-    # -- Private: the settings of this tool ----------------------------------------------------------
+    # -- Private: website builder settings -----------------------------------------------------------
 
-    def _pop_required_from_extra(self, key: str, purpose: str):
-        """Removes the key from the values: Zensical must not receive the settings of this tool."""
-        extra: dict = self.zensical_values["extra"]
+    def _extract_documentation_sources(self) -> list[dict]:
+        """The folders of the repository to copy into the website, each with its 'source' and 'destination'."""
+        documentation_sources: list[dict] = self._extract_key_from_extra(
+            DOCUMENTATION_SOURCES_KEY, "folders to copy"
+        )
+        self._check_documentation_sources(documentation_sources)
+        return documentation_sources
+
+
+    def _extract_repository_url(self) -> str:
+        """The git repository the versions are cloned from."""
+        return self._extract_key_from_extra(REPOSITORY_URL_KEY, "repository to clone")
+
+
+    def _extract_version_catalog(self) -> WebsiteVersionCatalog:
+        """The catalog of versions to build: names, git references, which one is the latest version."""
+        declared_versions: list[dict] = self._extract_key_from_extra(VERSIONS_KEY, "versions to build")
+        try:
+            return WebsiteVersionCatalog(declared_versions, self._zensical_settings["site_url"])
+        except ValueError as error:
+            raise SystemExit(f"{self._project_settings_file}: {error}")
+
+
+    def _extract_key_from_extra(self, key: str, purpose: str) -> Any:
+        """Removes the key from 'extra' and returns its value. Throws an error if the key is missing."""
+        extra: dict = self._zensical_settings["extra"]
         if key not in extra:
             raise SystemExit(f"{self._project_settings_file}: no '{key}' under 'extra:' ({purpose})")
         return extra.pop(key)
 
 
-    def _create_versions(self, declared_versions: list[dict]) -> WebsiteVersions:
-        try:
-            return WebsiteVersions(declared_versions, self.zensical_values["site_url"])
-        except ValueError as error:
-            raise SystemExit(f"{self._project_settings_file}: {error}")
+    # -- Private: input verification -----------------------------------------------------------------
+
+    def _check_zensical_settings(self) -> None:
+        self._check_site_url()
+        self._check_extra()
+        self._check_no_global_navigation()
 
 
-    # -- Private: checks -----------------------------------------------------------------------------
-
-    def _check_site_url_is_text(self) -> None:
-        if not isinstance(self.zensical_values.get("site_url"), str):
+    def _check_site_url(self) -> None:
+        if not isinstance(self._zensical_settings.get("site_url"), str):
             raise SystemExit(f"{self._project_settings_file}: 'site_url' is required and must be text")
 
 
-    def _check_extra_is_a_mapping(self) -> None:
-        if not isinstance(self.zensical_values.get("extra"), dict):
+    def _check_extra(self) -> None:
+        if not isinstance(self._zensical_settings.get("extra"), dict):
             raise SystemExit(f"{self._project_settings_file}: 'extra' must contain 'key: value' lines")
 
 
     def _check_no_global_navigation(self) -> None:
-        if NAVIGATION_KEY in self.zensical_values:
+        if NAVIGATION_KEY in self._zensical_settings:
             raise SystemExit(f"{self._project_settings_file}: '{NAVIGATION_KEY}' would apply to every version; "
                              "put it in 'navigation' of the version it belongs to")
 
 
-    def _check_sources_have_source_and_destination(self) -> None:
-        if not isinstance(self.sources, list) or not all(self._has_source_and_destination(entry)
-                                                         for entry in self.sources):
-            raise SystemExit(f"{self._project_settings_file}: '{SOURCES_KEY}' must be a list of entries "
+    def _check_documentation_sources(self, documentation_sources: list[dict]) -> None:
+        is_valid: bool = isinstance(documentation_sources, list)
+        if is_valid:
+            for documentation_source in documentation_sources:
+                if not self._has_source_and_destination(documentation_source):
+                    is_valid = False
+        if not is_valid:
+            raise SystemExit(f"{self._project_settings_file}: '{DOCUMENTATION_SOURCES_KEY}' must be a list of entries "
                              "with a 'source' and a 'destination' folder")
 
 
     @staticmethod
-    def _has_source_and_destination(entry) -> bool:
-        return isinstance(entry, dict) and isinstance(entry.get("source"), str) \
-            and isinstance(entry.get("destination"), str)
+    def _has_source_and_destination(entry: object) -> bool:
+        return isinstance(entry, dict) and isinstance(entry.get("source"), str) and isinstance(entry.get("destination"), str)

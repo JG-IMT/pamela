@@ -8,10 +8,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-from webbuilder.preparation.version_site_input import VERSION_SITE_FOLDER_NAME, VersionSiteInput
+from webbuilder.helper.folder_helper import FolderHelper
+from webbuilder.preparation.zensical_input import VERSION_SITE_FOLDER_NAME, ZensicalInput
 from webbuilder.repository.git_repository import GitRepository
 from webbuilder.settings.website_settings import WebsiteSettings
-from webbuilder.settings.website_versions import WebsiteVersion
+from webbuilder.settings.website_version import WebsiteVersion
 
 VERSION_CLONE_FOLDER_NAME: str = "version_clone"
 
@@ -23,18 +24,18 @@ class VersionBuild:
 
     def __init__(
         self,
-        settings: WebsiteSettings,
+        website_settings: WebsiteSettings,
         git_repository: GitRepository,
         version: WebsiteVersion,
         version_build_folder: Path,
     ) -> None:
-        self.settings: WebsiteSettings = settings
-        self.git_repository: GitRepository = git_repository
-        self.version: WebsiteVersion = version
-        self.version_build_folder: Path = version_build_folder
+        self._website_settings: WebsiteSettings = website_settings
+        self._git_repository: GitRepository = git_repository
+        self._version: WebsiteVersion = version
+        self._version_build_folder: Path = version_build_folder
 
-        self.version_clone_folder: Path = version_build_folder / VERSION_CLONE_FOLDER_NAME  # the clone of the version
-        self.version_site_folder: Path = version_build_folder / VERSION_SITE_FOLDER_NAME
+        self._version_clone_folder: Path = version_build_folder.joinpath(VERSION_CLONE_FOLDER_NAME)
+        self._version_site_folder: Path = version_build_folder.joinpath(VERSION_SITE_FOLDER_NAME)
 
 
     # -- Public: entry point -------------------------------------------------------------------------
@@ -44,24 +45,35 @@ class VersionBuild:
         Clones the version, prepares its input folder, runs Zensical, then deletes the clone - also
         when the build fails. Returns the version site folder, which holds the pages of the version.
         """
-        print(f"Building version {self.version.name} ({self.version.git_ref})")
-        self.git_repository.clone_at(self.version.git_ref, self.version_clone_folder)
+        print(f"Building version {self._version.get_name()} ({self._version.get_git_ref()})")
+        self._clone_version()
         try:
-            version_site_input: VersionSiteInput = VersionSiteInput(
-                self.settings, self.version_clone_folder, self.version_build_folder, self.version
-            )
-            self._run_zensical(version_site_input.prepare())
+            zensical_input: ZensicalInput = self._create_zensical_input()
+            zensical_input.prepare_input()
+            self._run_zensical(zensical_input.write_config())
         finally:
-            GitRepository.delete_folder_with_clones(self.version_clone_folder)
-        return self.version_site_folder
+            FolderHelper.delete_folder(self._version_clone_folder)
+        return self._version_site_folder
 
 
-    # -- Private: Zensical ---------------------------------------------------------------------------
+    # -- Private: build steps ------------------------------------------------------------------------
+
+    def _clone_version(self) -> None:
+        """Clones the git reference of the version into the clone folder."""
+        self._git_repository.clone_at(self._version.get_git_ref(), self._version_clone_folder)
+
+
+    def _create_zensical_input(self) -> ZensicalInput:
+        """The input of Zensical for the version, to write from the clone of the version."""
+        return ZensicalInput(
+            self._website_settings, self._version_clone_folder, self._version_build_folder, self._version
+        )
+
 
     def _run_zensical(self, zensical_config_file: Path) -> None:
-        """Zensical is the one installed for the Python running this tool."""
-        result: subprocess.CompletedProcess = subprocess.run(
+        """Runs the Zensical installed for the Python running the website builder. Stops the build if it fails."""
+        zensical_result: subprocess.CompletedProcess = subprocess.run(
             [sys.executable, "-m", "zensical", "build", "--clean", "-f", str(zensical_config_file)]
         )
-        if result.returncode != 0:
-            raise SystemExit(f"Zensical failed on version {self.version.name}")
+        if zensical_result.returncode != 0:
+            raise SystemExit(f"Zensical failed on version {self._version.get_name()}")

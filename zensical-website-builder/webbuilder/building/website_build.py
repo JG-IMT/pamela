@@ -5,12 +5,13 @@ its own and only replaces the previous website once every version is built, so a
 leaves a website with missing versions.
 """
 
-import shutil
 from pathlib import Path
 
 from webbuilder.building.version_build import VersionBuild
+from webbuilder.helper.folder_helper import FolderHelper
 from webbuilder.repository.git_repository import GitRepository
 from webbuilder.settings.website_settings import WebsiteSettings
+from webbuilder.settings.website_version import WebsiteVersion
 
 VERSION_BUILDS_FOLDER_NAME: str = "version_builds"
 WEBSITE_FOLDER_NAME: str = "website"
@@ -22,43 +23,56 @@ class WebsiteBuild:
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, settings: WebsiteSettings, git_repository: GitRepository, build_folder: Path) -> None:
-        self.settings: WebsiteSettings = settings
-        self.git_repository: GitRepository = git_repository
+    def __init__(self, website_settings: WebsiteSettings, git_repository: GitRepository, build_folder: Path) -> None:
+        self._website_settings: WebsiteSettings = website_settings
+        self._git_repository: GitRepository = git_repository
 
-        self.version_builds_folder: Path = build_folder / VERSION_BUILDS_FOLDER_NAME  # one build folder per version
-        self.website_in_progress_folder: Path = build_folder / WEBSITE_IN_PROGRESS_FOLDER_NAME
-        self.website_folder: Path = build_folder / WEBSITE_FOLDER_NAME
+        self._version_builds_folder: Path = build_folder.joinpath(VERSION_BUILDS_FOLDER_NAME)  # one work folder per version
+        self._website_in_progress_folder: Path = build_folder.joinpath(WEBSITE_IN_PROGRESS_FOLDER_NAME)
+        self._website_folder: Path = build_folder.joinpath(WEBSITE_FOLDER_NAME)
 
 
     # -- Public: entry point -------------------------------------------------------------------------
 
     def build(self) -> Path:
         """
-        Builds each declared version, copies it into the website in progress, then replaces the
-        previous website by it. Stops at the first version that fails, keeping the previous website.
+        Builds each declared version into the website in progress, then replaces the previous website
+        by it. Stops at the first version that fails, keeping the previous website.
         Returns the website folder.
         """
-        GitRepository.delete_folder_with_clones(self.version_builds_folder)  # may hold the clones of an older build
-        self._delete_folder(self.website_in_progress_folder)
+        self._delete_previous_build()
+        
+        for version in self._website_settings.get_version_catalog().get_all_versions():
+            version_site_folder: Path = self._build_version(version)
+            self._add_version_to_website(version, version_site_folder)
+        self._replace_website()
 
-        for version in self.settings.versions:
-            version_build: VersionBuild = VersionBuild(
-                self.settings, self.git_repository, version, self.version_builds_folder / version.name
-            )
-            version_folder: Path = self.website_in_progress_folder / self.settings.versions.folder_of(version)
-            shutil.copytree(version_build.build(), version_folder, dirs_exist_ok=True)
-
-        self._delete_folder(self.website_folder)
-        self.website_in_progress_folder.rename(self.website_folder)
-
-        print(f"Website built in {self.website_folder}")
-        return self.website_folder
+        print(f"Website built in {self._website_folder}")
+        return self._website_folder
 
 
-    # -- Private: folders ----------------------------------------------------------------------------
+    # -- Private: build steps ------------------------------------------------------------------------
 
-    @staticmethod
-    def _delete_folder(folder: Path) -> None:
-        if folder.exists():
-            shutil.rmtree(folder)
+    def _delete_previous_build(self) -> None:
+        FolderHelper.delete_folder(self._version_builds_folder)
+        FolderHelper.delete_folder(self._website_in_progress_folder)
+
+
+    def _build_version(self, version: WebsiteVersion) -> Path:
+        """Builds the version in its own work folder. Returns the folder of the site of the version."""
+        version_build_folder: Path = self._version_builds_folder.joinpath(version.get_name())
+        
+        version_build: VersionBuild = VersionBuild(self._website_settings, self._git_repository, version, version_build_folder)
+        return version_build.build()
+
+
+    def _add_version_to_website(self, version: WebsiteVersion, version_site_folder: Path) -> None:
+        """Copies the site of the version into the website in progress: at the root for the latest, else in its folder."""
+        folder_of_version: str = self._website_settings.get_version_catalog().folder_of(version)
+        FolderHelper.copy_folder(version_site_folder, self._website_in_progress_folder.joinpath(folder_of_version))
+
+
+    def _replace_website(self) -> None:
+        """Puts the website in progress in place of the previous website, deleted only now that every version is built."""
+        FolderHelper.delete_folder(self._website_folder)
+        self._website_in_progress_folder.rename(self._website_folder)
