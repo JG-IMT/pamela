@@ -2,11 +2,11 @@
 <div class="site-footer">
   <div class="site-footer__columns">
     {% for footer_column in config.extra.footer_columns %}
-      <div>
+      <div class="site-footer__column">
         <p class="site-footer__title">{{ footer_column.title }}</p>
-        <ul>
+        <ul class="site-footer__links">
           {% for footer_link in footer_column.links %}
-            <li><a href="{{ footer_link.link }}">{{ footer_link.title }}</a></li>
+            <li class="site-footer__item"><a href="{{ footer_link.link }}">{{ footer_link.title }}</a></li>
           {% endfor %}
         </ul>
       </div>

@@ -8,18 +8,17 @@ theme:
   favicon: favicon.ico
   features:
     - navigation.top
-    - navigation.path
     - search.suggest
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       toggle:
-        icon: material/brightness-7
+        icon: octicons/sun-24
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       toggle:
-        icon: material/brightness-4
+        icon: octicons/moon-24
         name: Switch to light mode
 
 extra_css:

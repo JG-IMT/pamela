@@ -1,55 +1,133 @@
 /* Colours and layout shared by every Openflexo site */
 
+
+/* -- Variables ----------------------------------------------------------------------- */
+
 :root {
+  /* Colours of the light scheme; the dark scheme replaces them below */
   --site-primary: #87b924;
   --site-primary-dark: #6a911a;
   --site-primary-on-dark: #a0d13a;
+  --site-link: var(--site-primary);
   --site-text: #1c1e21;
+  --site-text-secondary: #525860;
   --site-border: #dadde1;
+  --site-surface: #ebedf0;
+  --site-surface-text: #000;
+  --site-highlight: rgba(0, 0, 0, 0.05);
+  --site-hover: rgba(0, 0, 0, 0.06);
+  --site-code-background: #f6f8fa;
+  --site-header-background: #fff;
+  --site-banner-border: #e6a700;
+  --site-banner-background: #fff8e6;
+  --site-banner-text: #4d3800;
   --site-footer-background: #303846;
+  --site-footer-text: #ebedf0;
+
+  /* Sizes of the page: the menu and the page block are fixed, the free space is around the page block */
+  --site-header-height: 3rem;
+  --site-menu-width: 15rem;
+  --site-toc-width: 16.5rem;
+  --site-container-width: 66rem;
+  --site-gutter: 0.8rem;
+  --site-free-space: max(0px, calc((100% - var(--site-menu-width) - var(--site-container-width)) / 2));
+
   --md-text-font: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
 }
 
-/* On the colour scheme with both attributes, or the theme's own rules win */
+[data-md-color-scheme="slate"] {
+  --site-link: var(--site-primary-on-dark);
+  --site-text: #e3e3e3;
+  --site-text-secondary: #b8bcc2;
+  --site-border: #444950;
+  --site-surface: #3a3a3a;
+  --site-surface-text: #e3e3e3;
+  --site-highlight: rgba(255, 255, 255, 0.1);
+  --site-hover: rgba(255, 255, 255, 0.06);
+  --site-code-background: #2b2d31;
+  --site-header-background: #242526;
+  --site-banner-border: #d9a400;
+  --site-banner-background: #3b3217;
+  --site-banner-text: #f5e6b3;
+}
+
+/* The theme's colours, on the colour scheme with both attributes, or the theme's own rules win */
 [data-md-color-scheme="default"][data-md-color-primary],
 [data-md-color-scheme="slate"][data-md-color-primary] {
   --md-primary-fg-color: var(--site-primary);
   --md-accent-fg-color: var(--site-primary-dark);
-  --md-typeset-a-color: var(--site-primary);
+  --md-typeset-a-color: var(--site-link);
   --md-default-fg-color: var(--site-text);
   --md-typeset-color: var(--site-text);
 }
 
-[data-md-color-scheme="slate"][data-md-color-primary] {
-  --site-text: #e3e3e3;
-  --site-border: #444950;
-  --md-typeset-a-color: var(--site-primary-on-dark);
+
+/* -- Page layout --------------------------------------------------------------------- */
+
+/* 1rem stays 20px on every screen: the theme makes it grow on wide screens, which enlarges the whole page */
+html {
+  font-size: 125%;
+}
+
+/* The side menu is on the left edge of the page, not centred in a narrow grid */
+.md-main__inner.md-grid {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Wide screens: a separator line runs from the header to the footer, and the page and its table of contents
+   are one block, centred in what the menu leaves */
+@media (min-width: 76.25em) {
+  .md-main__inner {
+    margin-top: 0;
+    background-image: linear-gradient(to right,
+      transparent calc(var(--site-menu-width) - 1px),
+      var(--site-border) calc(var(--site-menu-width) - 1px),
+      var(--site-border) var(--site-menu-width),
+      transparent var(--site-menu-width));
+  }
+
+  .md-content {
+    margin-left: var(--site-free-space);
+  }
+
+  /* The same selectors as the theme, whose margins they replace. The theme adds 0.4rem above the page. */
+  .md-content__inner,
+  [dir="ltr"] .md-sidebar--primary:not([hidden]) ~ .md-content > .md-content__inner,
+  [dir="ltr"] .md-sidebar--secondary:not([hidden]) ~ .md-content > .md-content__inner {
+    max-width: none;
+    margin-left: var(--site-gutter);
+    margin-right: var(--site-gutter);
+    padding-top: 0.4rem;
+  }
 }
 
 
-/* -- Navbar -------------------------------------------------------------------------- */
+/* -- Header -------------------------------------------------------------------------- */
 
 /* !important: the "classic" variant hardcodes the header colours */
 .site-navbar {
-  background-color: #fff !important;
+  background-color: var(--site-header-background) !important;
   color: var(--site-text) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-[data-md-color-scheme="slate"] .site-navbar {
-  background-color: #242526 !important;
+.site-navbar .md-header__inner {
+  height: var(--site-header-height);
+  max-width: none;
+  padding: 0 var(--site-gutter);
 }
 
-.site-navbar .md-header__inner {
-  height: 3rem;
-  max-width: none;
+.site-navbar .md-header__button {
+  color: inherit;
 }
 
 .site-navbar__brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-right: 1rem;
+  gap: 0.4rem;
+  margin-right: var(--site-gutter);
   color: inherit;
 }
 
@@ -64,13 +142,14 @@
 .site-navbar__links {
   display: flex;
   flex: 1;
-  gap: 1.25rem;
 }
 
 .site-navbar__link {
+  padding: 0.2rem 0.6rem;
   color: inherit;
   font-size: 0.8rem;
   font-weight: 500;
+  line-height: 1.65;
 }
 
 .site-navbar__link:hover,
@@ -78,17 +157,33 @@
   color: var(--site-primary) !important;
 }
 
+/* The colour toggle is a 32px square, next to a 212px by 40px search button */
+.site-navbar .md-header__option .md-header__button {
+  margin: 0;
+  padding: 0.2rem;
+}
+
+@media (min-width: 60em) {
+  .site-navbar .md-search {
+    padding: 0;
+  }
+
+  .site-navbar .md-search__button {
+    width: 10.6rem;
+    height: 2rem;
+  }
+}
+
 .site-navbar__version {
   position: relative;
-  margin-right: 0.8rem;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .site-version-menu summary {
   cursor: pointer;
   list-style: none;
-  padding: 0.3rem 0.5rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 0.2rem;
 }
 
@@ -97,7 +192,7 @@
 }
 
 .site-version-menu summary:hover {
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: var(--site-hover);
 }
 
 .site-version-menu--unavailable summary {
@@ -130,7 +225,7 @@
 }
 
 .site-version-menu__list a:hover {
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: var(--site-hover);
 }
 
 .site-version-menu__current a {
@@ -161,28 +256,14 @@
   }
 }
 
-.site-navbar .md-header__button,
-.site-navbar .md-search__input,
-.site-navbar .md-search__icon {
-  color: inherit;
-}
 
-.site-navbar .md-search__input {
-  background-color: rgba(0, 0, 0, 0.06);
-}
+/* -- Side menu and table of contents ------------------------------------------------- */
 
-
-/* -- Side menu ----------------------------------------------------------------------- */
-
-/* The site title belongs in the mobile drawer only */
-@media (min-width: 76.25em) {
-  .md-nav--primary > .md-nav__title {
-    display: none;
-  }
-
-  .md-sidebar--primary {
-    width: 15rem;
-  }
+/* The page in both menus */
+.md-nav__link--active {
+  color: var(--site-primary) !important;
+  background-color: var(--site-highlight);
+  border-radius: 0.2rem;
 }
 
 .md-nav--primary .md-nav__link {
@@ -190,10 +271,90 @@
   font-weight: 500;
 }
 
-.md-nav__link--active {
-  color: var(--site-primary) !important;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 0.2rem;
+@media (min-width: 76.25em) {
+  /* Side menu: on the left edge, under the header, the title belongs in the mobile drawer only */
+  .md-sidebar--primary {
+    top: var(--site-header-height);
+    width: var(--site-menu-width);
+    padding: 0.4rem 0 0;
+  }
+
+  .md-nav--primary > .md-nav__title {
+    display: none;
+  }
+
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    margin: 0;
+  }
+
+  .md-sidebar--primary .md-sidebar__inner {
+    padding: 0 0.5rem 0 0.4rem;
+  }
+
+  .md-sidebar--primary .md-nav--primary {
+    margin: 0;
+  }
+
+  [dir="ltr"] .md-sidebar--primary .md-nav--primary > .md-nav__list {
+    padding-left: 0;
+  }
+
+  .md-sidebar--primary .md-nav__item {
+    padding: 0;
+  }
+
+  /* The same selectors as the theme, whose margins and spacing they replace */
+  .md-nav--primary .md-nav__link {
+    margin: 0.2rem 0 0;
+    padding: 0.3rem 0.6rem;
+    line-height: 1rem;
+  }
+
+  [dir="ltr"] .md-nav--primary .md-nav__item > .md-nav__link {
+    margin-right: 0;
+  }
+
+  .md-sidebar--primary .md-nav--primary > .md-nav__list > .md-nav__item:first-child > .md-nav__link {
+    margin-top: 0;
+  }
+
+  /* Table of contents: on the right of the page, in the page block, under the header */
+  .md-sidebar--secondary {
+    top: calc(var(--site-header-height) + var(--site-gutter));
+    width: var(--site-toc-width);
+    margin-top: var(--site-gutter);
+    margin-right: var(--site-free-space);
+    padding: 0;
+  }
+
+  .md-sidebar--secondary .md-sidebar__scrollwrap {
+    margin: 0 var(--site-gutter);
+  }
+
+  .md-sidebar--secondary .md-sidebar__inner {
+    width: 100%;
+    padding: 0;
+  }
+
+  .md-sidebar--secondary .md-nav__title {
+    display: none;
+  }
+
+  /* No negative margin: it makes the list overflow its frame, which shows a scroll bar */
+  .md-sidebar--secondary .md-nav--secondary {
+    margin: 0;
+    font-size: 0.64rem;
+  }
+
+  [dir="ltr"] .md-sidebar--secondary .md-nav--secondary > .md-nav__list {
+    padding: 0.4rem 0 0.4rem 0.4rem;
+  }
+
+  .md-sidebar--secondary .md-nav__link {
+    margin: 0.4rem 0.4rem 0;
+    color: var(--site-text-secondary);
+    line-height: 1.65;
+  }
 }
 
 
@@ -232,6 +393,10 @@
   margin: 0 0 1rem;
 }
 
+.md-typeset a {
+  color: var(--md-typeset-a-color);
+}
+
 .md-typeset code,
 .md-typeset kbd,
 .md-typeset pre {
@@ -240,72 +405,116 @@
 }
 
 .md-typeset pre > code {
+  background-color: var(--site-code-background);
+  border-radius: 0.3rem;
   font-size: 1em;
   line-height: 1.45;
 }
 
-.md-typeset a {
-  color: var(--md-typeset-a-color);
+
+/* -- Top of the page ----------------------------------------------------------------- */
+
+.site-breadcrumb {
+  --site-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z'/%3E%3C/svg%3E");
+  margin-bottom: 0.8rem;
+  font-size: 0.64rem;
+  line-height: 1.65;
 }
 
-.md-typeset pre > code {
-  background-color: #f6f8fa;
-  border-radius: 0.3rem;
+/* Longer selectors than the theme's margins on lists and their items */
+[dir="ltr"] .md-typeset .site-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-[data-md-color-scheme="slate"] .md-typeset pre > code {
-  background-color: #2b2d31;
+[dir="ltr"] .md-typeset .site-breadcrumb__entry {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+/* A chevron before every entry but the first */
+.site-breadcrumb__entry + .site-breadcrumb__entry::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  margin: 0 0.4rem;
+  background-color: currentColor;
+  -webkit-mask: var(--site-chevron) center / contain no-repeat;
+  mask: var(--site-chevron) center / contain no-repeat;
+}
+
+/* Longer selector than the theme's link colour */
+.site-breadcrumb .site-breadcrumb__link {
+  padding: 0.256rem 0.512rem;
+  border-radius: 1.2rem;
+  color: var(--site-text);
+}
+
+.site-breadcrumb .site-breadcrumb__home {
+  display: flex;
+  align-items: center;
+  height: 1.57rem;
+}
+
+.site-breadcrumb__home svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: currentColor;
+}
+
+.site-breadcrumb .site-breadcrumb__current {
+  background-color: var(--site-highlight);
+  color: var(--site-link);
 }
 
 .site-version-badge {
-  display: inline-block;
-  margin-bottom: 1rem;
-  padding: 0.1rem 0.5rem;
-  border: 1px solid #ebedf0;
-  border-radius: 0.25rem;
-  background: #ebedf0;
-  color: #000;
+  display: block;
+  width: fit-content;
+  margin-bottom: 0.1rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--site-surface);
+  border-radius: 0.32rem;
+  background: var(--site-surface);
+  color: var(--site-surface-text);
   font-size: 0.6rem;
   font-weight: 700;
-}
-
-[data-md-color-scheme="slate"] .site-version-badge {
-  border-color: #3a3a3a;
-  background: #3a3a3a;
-  color: #e3e3e3;
+  line-height: 1;
 }
 
 .site-earlier-version-banner {
   margin-bottom: 1rem;
   padding: 0.6rem 0.8rem;
-  border: 1px solid #e6a700;
+  border: 1px solid var(--site-banner-border);
   border-left-width: 0.3rem;
   border-radius: 0.25rem;
-  background: #fff8e6;
-  color: #4d3800;
+  background: var(--site-banner-background);
+  color: var(--site-banner-text);
   font-size: 0.7rem;
 }
-[data-md-color-scheme="slate"] .site-earlier-version-banner {
-  border-color: #d9a400;
-  background: #3b3217;
-  color: #f5e6b3;
-}
+
+
+/* -- Previous and next pages --------------------------------------------------------- */
 
 .site-pagination {
   display: flex;
-  gap: 1rem;
-  margin-top: 3rem;
+  gap: var(--site-gutter);
+  margin-top: 2.4rem;
 }
 
-.site-pagination a {
+.site-pagination__link {
   display: flex;
   flex: 1;
   flex-direction: column;
   gap: 0.2rem;
-  padding: 0.8rem 1rem;
+  padding: var(--site-gutter);
   border: 1px solid var(--site-border);
-  border-radius: 0.4rem;
-  color: var(--site-primary);
+  border-radius: 0.32rem;
+  line-height: 1.25;
 }
 
 .site-pagination__next {
@@ -314,59 +523,72 @@
   text-align: right;
 }
 
-.site-pagination a span {
-  color: var(--site-text);
-  font-size: 0.65rem;
+.site-pagination__direction {
+  color: var(--site-text-secondary);
+  font-size: 0.7rem;
   font-weight: 500;
-  text-transform: uppercase;
-  opacity: 0.7;
 }
 
 
 /* -- Footer -------------------------------------------------------------------------- */
 
+/* The theme colours the footer links with this variable, which wins over any rule written here */
 .md-footer-meta {
+  --md-footer-fg-color--light: var(--site-footer-text);
   background-color: var(--site-footer-background);
 }
 
+/* The footer is centred on the page, as wide as the page block at most, with equal columns */
+.md-footer-meta__inner.md-grid {
+  max-width: var(--site-container-width);
+  padding: 0;
+}
+
 .site-footer {
-  padding: 1.5rem 0.6rem 1rem;
-  color: #ebedf0;
+  width: 100%;
+  padding: 1.6rem 0;
+  color: var(--site-footer-text);
 }
 
 .site-footer__columns {
   display: flex;
   flex-wrap: wrap;
-  gap: 4rem;
 }
 
-.site-footer__title {
-  margin: 0 0 0.6rem;
+.site-footer__column {
+  flex: 1;
+  padding: 0 var(--site-gutter);
+}
+
+/* Longer selector than the theme's margins on paragraphs */
+.site-footer .site-footer__title {
+  margin: 0 0 0.8rem;
   font-size: 0.8rem;
   font-weight: 700;
+  line-height: 1.25;
 }
 
-.site-footer ul {
+/* Longer selectors than the theme's margins on lists and their items */
+[dir="ltr"] .md-typeset .site-footer__links {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.site-footer li {
-  margin-bottom: 0.3rem;
-  font-size: 0.7rem;
-}
-
-.site-footer a {
-  color: #ebedf0;
+[dir="ltr"] .md-typeset .site-footer__item {
+  margin: 0;
+  padding: 0.14rem 0;
+  font-size: 0.8rem;
+  line-height: 1.65;
 }
 
 .site-footer a:hover {
   text-decoration: underline;
 }
 
-.site-footer__copyright {
-  margin: 1.5rem 0 0;
-  font-size: 0.7rem;
+.site-footer .site-footer__copyright {
+  margin: 0.8rem 0 0;
+  padding: 0 var(--site-gutter);
+  font-size: 0.8rem;
   text-align: center;
 }

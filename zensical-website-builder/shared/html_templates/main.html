@@ -1,9 +1,24 @@
 {% extends "base.html" %}
 
-{# Around each page: links (narrow screens), version badge, Previous / Next #}
+{# Around each page: links (narrow screens), breadcrumb, version badge, Previous / Next #}
 {% block content %}
   <nav class="site-mobile-links" aria-label="Site links">
     {% include "partials/navbar_links.html" %}
+  </nav>
+  <nav class="site-breadcrumb" aria-label="Breadcrumb">
+    <ol class="site-breadcrumb__list">
+      <li class="site-breadcrumb__entry">
+        <a class="site-breadcrumb__link site-breadcrumb__home" href="{{ nav.homepage.url | url }}" aria-label="Home">
+          {% include ".icons/material/home.svg" %}
+        </a>
+      </li>
+      {% for ancestor in page.ancestors | reverse %}
+        <li class="site-breadcrumb__entry"><span class="site-breadcrumb__link">{{ ancestor.title }}</span></li>
+      {% endfor %}
+      <li class="site-breadcrumb__entry">
+        <span class="site-breadcrumb__link site-breadcrumb__current" aria-current="page">{{ page.title }}</span>
+      </li>
+    </ol>
   </nav>
   <div class="site-version-badge">Version: {{ config.extra.displayed_version }}</div>
   {% if config.extra.latest_version != config.extra.displayed_version %}
@@ -16,14 +31,14 @@
   {% if page.previous_page or page.next_page %}
     <nav class="site-pagination" aria-label="Pagination">
       {% if page.previous_page %}
-        <a class="site-pagination__previous" href="{{ page.previous_page.url | url }}">
-          <span>Previous</span>
+        <a class="site-pagination__link site-pagination__previous" href="{{ page.previous_page.url | url }}">
+          <span class="site-pagination__direction">Previous</span>
           <strong>« {{ page.previous_page.title }}</strong>
         </a>
       {% endif %}
       {% if page.next_page %}
-        <a class="site-pagination__next" href="{{ page.next_page.url | url }}">
-          <span>Next</span>
+        <a class="site-pagination__link site-pagination__next" href="{{ page.next_page.url | url }}">
+          <span class="site-pagination__direction">Next</span>
           <strong>{{ page.next_page.title }} »</strong>
         </a>
       {% endif %}

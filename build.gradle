@@ -85,42 +85,48 @@ apply plugin: 'org.openflexo.buildconfig'
 
 
 // -- Documentation website (Zensical) -----------------------------------------------------
+//   ./gradlew buildDocumentationSite   builds every version of the website in pamela-website/build/website
+//   ./gradlew serveDocumentationSite   shows it on http://localhost:8000 (build it first)
 
-def documentationBuilderFolder = file("zensical-website-builder")
-def websiteSettingsFile = file("pamela-website/website_settings.yml")
-def websiteFolder = file("pamela-website/build/website")
+def builderFolder = file('zensical-website-builder')
 def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
-def systemPython = isWindows ? "python" : "python3"
-def environmentPython = new File(documentationBuilderFolder, isWindows ? ".venv/Scripts/python.exe" : ".venv/bin/python")
+def systemPython = isWindows ? 'python' : 'python3'
+def environmentPython = new File(builderFolder, isWindows ? '.venv/Scripts/python.exe' : '.venv/bin/python')
 
-tasks.register("createDocumentationEnvironment", Exec) {
-    group = "documentation"
-    description = "Creates the Python environment (Python 3.11 or later required)"
-    workingDir = documentationBuilderFolder
-    onlyIf { !environmentPython.exists() }
-    commandLine systemPython, "-m", "venv", ".venv"
+tasks.register('buildDocumentationSite') {
+    group = 'documentation'
+    description = 'Builds every version of the documentation website in pamela-website/build/website'
+    doLast {
+        if (!environmentPython.exists()) {
+            exec {
+                println '\n [1/3] Creating the Python environment (Python 3.11 or later required) \n'
+                workingDir builderFolder
+                commandLine systemPython, '-m', 'venv', '.venv'
+            }
+        }
+
+        exec {
+            println '\n [2/3] Installing Zensical \n'
+            workingDir builderFolder
+            commandLine environmentPython, '-m', 'pip', 'install', '-r', 'requirements.txt'
+        }
+
+        exec {
+            println '\n [3/3] Building every version of the website, cloned from git \n'
+            workingDir builderFolder
+            commandLine environmentPython, 'main.py', '--settings', file('pamela-website/website_settings.yml')
+        }
+    }
 }
 
-tasks.register("installDocumentationTools", Exec) {
-    group = "documentation"
-    description = "Installs Zensical in the Python environment"
-    dependsOn "createDocumentationEnvironment"
-    workingDir = documentationBuilderFolder
-    commandLine environmentPython, "-m", "pip", "install", "-r", "requirements.txt"
-}
-
-tasks.register("buildDocumentationSite", Exec) {
-    group = "documentation"
-    description = "Builds every version of the documentation website in pamela-website/build/website"
-    dependsOn "installDocumentationTools"
-    workingDir = documentationBuilderFolder
-    commandLine environmentPython, "main.py", "--settings", websiteSettingsFile
-}
-
-tasks.register("serveDocumentationSite", Exec) {
-    group = "documentation"
-    description = "Serves pamela-website/build/website on http://localhost:8000 (build it first)"
-    dependsOn "createDocumentationEnvironment"
-    workingDir = documentationBuilderFolder
-    commandLine environmentPython, "-m", "http.server", "8000", "--bind", "localhost", "--directory", websiteFolder
+tasks.register('serveDocumentationSite') {
+    group = 'documentation'
+    description = 'Serves pamela-website/build/website on http://localhost:8000 (build it first)'
+    doLast {
+        exec {
+            println '\n Serving the website on http://localhost:8000 (Ctrl+C to stop) \n'
+            workingDir builderFolder
+            commandLine environmentPython, '-m', 'http.server', '8000', '--bind', 'localhost', '--directory', file('pamela-website/build/website')
+        }
+    }
 }
